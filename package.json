@@ -1,0 +1,92 @@
+{
+  "name": "@kitium-ai/types",
+  "version": "1.0.0",
+  "description": "Enterprise-ready TypeScript types and interfaces for Kitium AI Product SaaS",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth.js",
+      "require": "./dist/auth.cjs",
+      "types": "./dist/auth.d.ts"
+    },
+    "./user": {
+      "import": "./dist/user.js",
+      "require": "./dist/user.cjs",
+      "types": "./dist/user.d.ts"
+    },
+    "./organization": {
+      "import": "./dist/organization.js",
+      "require": "./dist/organization.cjs",
+      "types": "./dist/organization.d.ts"
+    },
+    "./product": {
+      "import": "./dist/product.js",
+      "require": "./dist/product.cjs",
+      "types": "./dist/product.d.ts"
+    },
+    "./billing": {
+      "import": "./dist/billing.js",
+      "require": "./dist/billing.cjs",
+      "types": "./dist/billing.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api.js",
+      "require": "./dist/api.cjs",
+      "types": "./dist/api.d.ts"
+    },
+    "./errors": {
+      "import": "./dist/errors.js",
+      "require": "./dist/errors.cjs",
+      "types": "./dist/errors.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs",
+      "types": "./dist/utils.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:cjs": "tsc --module commonjs --outDir dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
+    "test": "echo \"No tests configured yet\"",
+    "prebuild": "npm run type-check",
+    "prepublishOnly": "npm run build && npm run lint"
+  },
+  "keywords": [
+    "types",
+    "typescript",
+    "saas",
+    "enterprise",
+    "kitium",
+    "api",
+    "interfaces"
+  ],
+  "author": "Kitium AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kitium-ai/types.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.2"
+  }
+}
