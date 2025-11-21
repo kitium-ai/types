@@ -5,6 +5,13 @@
  * This package provides comprehensive, type-safe interfaces for building scalable
  * SaaS applications with proper authentication, billing, organization management,
  * and API communication patterns.
+ *
+ * Single Source of Truth:
+ * - Domain models define core business entities
+ * - API types for request/response contracts
+ * - Database entities for persistence layer
+ * - Validators for runtime type checking and validation
+ * - Utilities for type transformations and helpers
  */
 
 // Re-export authentication and authorization types
@@ -30,3 +37,8 @@ export * from './errors';
 
 // Re-export utility types and helpers
 export * from './utils';
+
+// Export validators and entities as namespaced modules
+export { Validators } from './validators';
+export type * as ValidatorSchemas from './validators';
+export type * as Entities from './entities';

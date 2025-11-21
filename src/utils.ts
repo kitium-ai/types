@@ -388,7 +388,7 @@ export interface Deferred<T> {
  * Observable type
  */
 export interface Observable<T> {
-  readonly subscribe: (observer: Observer<T>) => Subscription;
+  readonly subscribe: (observer: Observer<T>) => ObserverSubscription;
 }
 
 /**
@@ -401,9 +401,9 @@ export interface Observer<T> {
 }
 
 /**
- * Subscription type
+ * Observer subscription type (for RxJS-like patterns)
  */
-export interface Subscription {
+export interface ObserverSubscription {
   readonly unsubscribe: () => void;
   readonly closed: boolean;
 }
