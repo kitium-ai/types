@@ -1,3 +1,5 @@
+import type { OrganizationId, ProductId, FeatureId, UserId, TeamId } from './primitives';
+
 /**
  * Product and Feature Types
  * Core product, feature, and project management types
@@ -56,8 +58,8 @@ export enum ReleaseType {
  * Core product entity
  */
 export interface Product {
-  readonly id: string;
-  readonly organizationId: string;
+  readonly id: ProductId;
+  readonly organizationId: OrganizationId;
   readonly name: string;
   readonly slug: string;
   readonly description: string;
@@ -66,15 +68,17 @@ export interface Product {
   readonly status: ProductStatus;
   readonly version: string;
   readonly currentVersion: ProductVersion;
-  readonly owner: string; // User ID
+  readonly owner: UserId;
   readonly team?: {
-    readonly id: string;
+    readonly id: TeamId;
     readonly name: string;
   };
   readonly category?: string;
   readonly tags: readonly string[];
   readonly documentation?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly documentation_url?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly support_email?: string;
   readonly features: number;
   readonly releases: number;
@@ -90,13 +94,13 @@ export interface Product {
  */
 export interface ProductVersion {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly version: string;
   readonly releaseType: ReleaseType;
   readonly name: string;
   readonly description: string;
   readonly changelog?: string;
-  readonly features: readonly string[]; // Feature IDs
+  readonly features: readonly FeatureId[]; // Feature IDs
   readonly releaseDate: Date;
   readonly downloadUrl?: string;
   readonly documentationUrl?: string;
@@ -112,22 +116,22 @@ export interface ProductVersion {
  * Feature entity
  */
 export interface Feature {
-  readonly id: string;
-  readonly productId: string;
+  readonly id: FeatureId;
+  readonly productId: ProductId;
   readonly name: string;
   readonly slug: string;
   readonly description: string;
   readonly status: FeatureStatus;
   readonly tier: FeatureTier;
-  readonly owner: string; // User ID
+  readonly owner: UserId; // User ID
   readonly epic?: string; // Epic ID
   readonly priority: number; // 1-5, higher = more important
   readonly estimatedHours?: number;
   readonly developmentHours?: number;
   readonly tags: readonly string[];
   readonly documentation?: string;
-  readonly dependsOn?: readonly string[]; // Feature IDs
-  readonly relatedFeatures?: readonly string[]; // Feature IDs
+  readonly dependsOn?: readonly FeatureId[]; // Feature IDs
+  readonly relatedFeatures?: readonly FeatureId[]; // Feature IDs
   readonly acceptanceCriteria?: readonly string[];
   readonly testCases?: readonly string[];
   readonly metrics?: {
@@ -148,11 +152,11 @@ export interface Feature {
  */
 export interface Epic {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly name: string;
   readonly description: string;
-  readonly owner: string; // User ID
-  readonly features: readonly string[]; // Feature IDs
+  readonly owner: UserId; // User ID
+  readonly features: readonly FeatureId[]; // Feature IDs
   readonly targetReleaseVersion: string;
   readonly startDate?: Date;
   readonly targetEndDate?: Date;
@@ -169,17 +173,17 @@ export interface Epic {
  */
 export interface Release {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly version: string;
   readonly releaseType: ReleaseType;
   readonly name: string;
   readonly description: string;
   readonly changelog: string;
-  readonly features: readonly string[]; // Feature IDs
+  readonly features: readonly FeatureId[]; // Feature IDs
   readonly bugFixes: readonly string[]; // Bug IDs
   readonly improvements: readonly string[]; // Improvement IDs
   readonly releaseDate: Date;
-  readonly releasedBy: string; // User ID
+  readonly releasedBy: UserId; // User ID
   readonly status: 'draft' | 'scheduled' | 'released' | 'rollback';
   readonly downloadUrl?: string;
   readonly documentationUrl?: string;
@@ -197,19 +201,19 @@ export interface Release {
  */
 export interface Issue {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly title: string;
   readonly description: string;
   readonly issueType: 'bug' | 'feature' | 'improvement' | 'task' | 'documentation';
   readonly status: 'open' | 'in_progress' | 'testing' | 'resolved' | 'closed' | 'wontfix';
   readonly priority: 'critical' | 'high' | 'medium' | 'low';
-  readonly assignee?: string; // User ID
-  readonly reporter: string; // User ID
+  readonly assignee?: UserId; // User ID
+  readonly reporter: UserId; // User ID
   readonly labels: readonly string[];
   readonly estimatedHours?: number;
   readonly actualHours?: number;
   readonly dueDate?: Date;
-  readonly relatedFeatures?: readonly string[]; // Feature IDs
+  readonly relatedFeatures?: readonly FeatureId[]; // Feature IDs
   readonly relatedIssues?: readonly string[]; // Issue IDs
   readonly attachments?: readonly {
     readonly id: string;
@@ -229,11 +233,11 @@ export interface Issue {
  */
 export interface Milestone {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly name: string;
   readonly description?: string;
   readonly targetDate: Date;
-  readonly features: readonly string[]; // Feature IDs
+  readonly features: readonly FeatureId[]; // Feature IDs
   readonly percentComplete: number;
   readonly status: 'not_started' | 'in_progress' | 'completed' | 'on_hold';
   readonly createdAt: Date;
@@ -297,15 +301,15 @@ export interface CreateIssueRequest {
  */
 export interface FeatureRequest {
   readonly id: string;
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly title: string;
   readonly description: string;
   readonly upvotes: number;
   readonly downvotes: number;
   readonly userUpvoted?: boolean;
-  readonly requestedBy: string; // User ID
+  readonly requestedBy: UserId; // User ID
   readonly status: 'new' | 'planned' | 'in_progress' | 'completed' | 'declined';
-  readonly linkedFeature?: string; // Feature ID
+  readonly linkedFeature?: FeatureId; // Feature ID
   readonly comments: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -315,7 +319,7 @@ export interface FeatureRequest {
  * Product usage metrics
  */
 export interface ProductUsageMetrics {
-  readonly productId: string;
+  readonly productId: ProductId;
   readonly date: Date;
   readonly activeUsers: number;
   readonly totalRequests: number;
@@ -323,7 +327,7 @@ export interface ProductUsageMetrics {
   readonly averageResponseTime: number;
   readonly uptime: number;
   readonly topFeatures: readonly {
-    readonly featureId: string;
+    readonly featureId: FeatureId;
     readonly name: string;
     readonly usage: number;
   }[];
@@ -334,8 +338,8 @@ export interface ProductUsageMetrics {
  * Feature adoption metrics
  */
 export interface FeatureAdoption {
-  readonly featureId: string;
-  readonly productId: string;
+  readonly featureId: FeatureId;
+  readonly productId: ProductId;
   readonly activationDate: Date;
   readonly uniqueUsers: number;
   readonly totalUsage: number;

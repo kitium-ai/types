@@ -6,7 +6,9 @@
 /**
  * Result type for operations that can succeed or fail
  */
-export type Result<T, E = Error> = { readonly success: true; readonly data: T } | { readonly success: false; readonly error: E };
+export type Result<T, E = Error> =
+  | { readonly success: true; readonly data: T }
+  | { readonly success: false; readonly error: E };
 
 /**
  * Optional type alias for nullable values
@@ -62,10 +64,15 @@ export interface Dictionary<T> {
 /**
  * Tuple type
  */
-export type Tuple<T, N extends number> = N extends N ? (number extends N ? readonly T[] : _TupleOf<T, N, readonly []>) : never;
-type _TupleOf<T, N extends number, R extends readonly unknown[]> = R['length'] extends N
+export type Tuple<T, N extends number> = N extends N
+  ? number extends N
+    ? readonly T[]
+    : TupleOf<T, N, readonly []>
+  : never;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+type TupleOf<T, N extends number, R extends readonly unknown[]> = R['length'] extends N
   ? R
-  : _TupleOf<T, N, readonly [...R, T]>;
+  : TupleOf<T, N, readonly [...R, T]>;
 
 /**
  * Async function type

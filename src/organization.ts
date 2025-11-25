@@ -4,6 +4,7 @@
  */
 
 import type { UserRole, Permission } from './auth';
+import type { OrganizationId, TeamId, UserId } from './primitives';
 
 /**
  * Organization tiers/plans
@@ -39,7 +40,7 @@ export enum BillingPeriod {
  * Core organization entity
  */
 export interface Organization {
-  readonly id: string;
+  readonly id: OrganizationId;
   readonly name: string;
   readonly slug: string;
   readonly description?: string;
@@ -60,7 +61,7 @@ export interface Organization {
   readonly maxSeats: number;
   readonly features: readonly string[];
   readonly owner: {
-    readonly id: string;
+    readonly id: UserId;
     readonly email: string;
     readonly firstName: string;
     readonly lastName: string;
@@ -77,7 +78,7 @@ export interface Organization {
  * Organization settings
  */
 export interface OrganizationSettings {
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly allowPublicSignup: boolean;
   readonly allowInviteOnly: boolean;
   readonly enforceSSO: boolean;
@@ -101,8 +102,8 @@ export interface OrganizationSettings {
  */
 export interface OrganizationMember {
   readonly id: string;
-  readonly organizationId: string;
-  readonly userId: string;
+  readonly organizationId: OrganizationId;
+  readonly userId: UserId;
   readonly user: {
     readonly id: string;
     readonly email: string;
@@ -112,7 +113,7 @@ export interface OrganizationMember {
   };
   readonly role: UserRole;
   readonly permissions: readonly Permission[];
-  readonly teamIds: readonly string[];
+  readonly teamIds: readonly TeamId[];
   readonly joinedAt: Date;
   readonly lastActiveAt?: Date;
   readonly isOwner: boolean;
@@ -122,17 +123,21 @@ export interface OrganizationMember {
  * Team entity for grouping and managing projects
  */
 export interface Team {
-  readonly id: string;
-  readonly organizationId: string;
+  readonly id: TeamId;
+  readonly organizationId: OrganizationId;
   readonly name: string;
   readonly description?: string;
   readonly icon?: string;
   readonly color?: string;
   readonly members: number;
   readonly projects: number;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly projects_limit: number;
-  readonly created_by: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  readonly created_by: UserId;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly is_public: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly is_archived: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -144,9 +149,9 @@ export interface Team {
  */
 export interface TeamMember {
   readonly id: string;
-  readonly teamId: string;
-  readonly organizationId: string;
-  readonly userId: string;
+  readonly teamId: TeamId;
+  readonly organizationId: OrganizationId;
+  readonly userId: UserId;
   readonly user: {
     readonly id: string;
     readonly email: string;
@@ -164,8 +169,8 @@ export interface TeamMember {
  * Team settings
  */
 export interface TeamSettings {
-  readonly teamId: string;
-  readonly organizationId: string;
+  readonly teamId: TeamId;
+  readonly organizationId: OrganizationId;
   readonly allowPublicProjects: boolean;
   readonly allowMemberInvitation: boolean;
   readonly defaultMemberRole: UserRole;
@@ -186,7 +191,7 @@ export interface TeamSettings {
  */
 export interface Department {
   readonly id: string;
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly parentDepartmentId?: string;
   readonly name: string;
   readonly description?: string;
@@ -201,7 +206,7 @@ export interface Department {
  * Organization resource quota
  */
 export interface ResourceQuota {
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly storageQuotaGB: number;
   readonly storageUsedGB: number;
   readonly apiCallsPerDay: number;
@@ -226,8 +231,8 @@ export interface ResourceQuota {
  */
 export interface OrganizationAuditLog {
   readonly id: string;
-  readonly organizationId: string;
-  readonly actorId: string;
+  readonly organizationId: OrganizationId;
+  readonly actorId: UserId;
   readonly action: string;
   readonly resourceType: string;
   readonly resourceId: string;
@@ -277,7 +282,7 @@ export interface InviteOrganizationMemberRequest {
   readonly email: string;
   readonly role: UserRole;
   readonly permissions?: readonly Permission[];
-  readonly teamIds?: readonly string[];
+  readonly teamIds?: readonly TeamId[];
 }
 
 /**
@@ -308,12 +313,12 @@ export interface UpdateTeamRequest {
  */
 export interface OrganizationInvite {
   readonly id: string;
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly email: string;
-  readonly invitedBy: string;
+  readonly invitedBy: UserId;
   readonly role: UserRole;
   readonly permissions: readonly Permission[];
-  readonly teamIds?: readonly string[];
+  readonly teamIds?: readonly TeamId[];
   readonly token: string;
   readonly expiresAt: Date;
   readonly acceptedAt?: Date;

@@ -146,7 +146,16 @@ export interface ValidationResult {
  */
 export interface ValidationRule {
   readonly field: string;
-  readonly type: 'string' | 'number' | 'boolean' | 'date' | 'email' | 'url' | 'enum' | 'array' | 'object';
+  readonly type:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'date'
+    | 'email'
+    | 'url'
+    | 'enum'
+    | 'array'
+    | 'object';
   readonly required: boolean;
   readonly min?: number;
   readonly max?: number;
@@ -217,7 +226,10 @@ export interface ErrorLog {
  * Custom exception types
  */
 export interface AuthenticationException extends ApplicationError {
-  readonly code: ErrorCode.AUTH_INVALID_CREDENTIALS | ErrorCode.AUTH_EXPIRED_TOKEN | ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS;
+  readonly code:
+    | ErrorCode.AUTH_INVALID_CREDENTIALS
+    | ErrorCode.AUTH_EXPIRED_TOKEN
+    | ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS;
 }
 
 export interface ValidationException extends ApplicationError {

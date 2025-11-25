@@ -1,3 +1,5 @@
+import type { InvoiceId, OrganizationId, PlanId, SubscriptionId, UserId } from './primitives';
+
 /**
  * Billing and Subscription Types
  * Payment processing, subscriptions, and invoice management
@@ -81,7 +83,7 @@ export enum TaxType {
  * Pricing plan entity
  */
 export interface PricingPlan {
-  readonly id: string;
+  readonly id: PlanId;
   readonly name: string;
   readonly slug: string;
   readonly description: string;
@@ -108,8 +110,8 @@ export interface PricingPlan {
  * Subscription entity
  */
 export interface Subscription {
-  readonly id: string;
-  readonly organizationId: string;
+  readonly id: SubscriptionId;
+  readonly organizationId: OrganizationId;
   readonly customerId: string;
   readonly plan: PricingPlan;
   readonly status: SubscriptionStatus;
@@ -143,7 +145,7 @@ export interface Subscription {
  */
 export interface SubscriptionLineItem {
   readonly id: string;
-  readonly subscriptionId: string;
+  readonly subscriptionId: SubscriptionId;
   readonly priceId: string;
   readonly price: number;
   readonly quantity: number;
@@ -160,9 +162,10 @@ export interface SubscriptionLineItem {
  */
 export interface PaymentMethod {
   readonly id: string;
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly type: PaymentMethodType;
   readonly isDefault: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly billing_details?: {
     readonly name?: string;
     readonly email?: string;
@@ -173,6 +176,7 @@ export interface PaymentMethod {
       readonly city: string;
       readonly state?: string;
       readonly country: string;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       readonly postal_code: string;
     };
   };
@@ -203,12 +207,12 @@ export interface PaymentMethod {
  * Invoice entity
  */
 export interface Invoice {
-  readonly id: string;
-  readonly organizationId: string;
+  readonly id: InvoiceId;
+  readonly organizationId: OrganizationId;
   readonly customerId: string;
   readonly number: string;
   readonly status: InvoiceStatus;
-  readonly subscriptionId?: string;
+  readonly subscriptionId?: SubscriptionId;
   readonly items: readonly InvoiceLineItem[];
   readonly subtotal: number;
   readonly discount?: {
@@ -231,7 +235,9 @@ export interface Invoice {
   readonly dueInDays: number;
   readonly description?: string;
   readonly notes?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly pdf_url?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly receipt_url?: string;
   readonly payment?: {
     readonly id: string;
@@ -250,7 +256,7 @@ export interface Invoice {
  */
 export interface InvoiceLineItem {
   readonly id: string;
-  readonly invoiceId: string;
+  readonly invoiceId: InvoiceId;
   readonly description: string;
   readonly quantity: number;
   readonly unitPrice: number;
@@ -264,8 +270,8 @@ export interface InvoiceLineItem {
  */
 export interface PaymentTransaction {
   readonly id: string;
-  readonly organizationId: string;
-  readonly invoiceId?: string;
+  readonly organizationId: OrganizationId;
+  readonly invoiceId?: InvoiceId;
   readonly paymentMethodId: string;
   readonly amount: number;
   readonly currency: string;
@@ -291,14 +297,14 @@ export interface PaymentTransaction {
 export interface Refund {
   readonly id: string;
   readonly transactionId: string;
-  readonly invoiceId: string;
-  readonly organizationId: string;
+  readonly invoiceId: InvoiceId;
+  readonly organizationId: OrganizationId;
   readonly amount: number;
   readonly currency: string;
   readonly reason: string;
   readonly status: 'pending' | 'processed' | 'failed' | 'rejected';
-  readonly requestedBy: string; // User ID
-  readonly processedBy?: string; // User ID
+  readonly requestedBy: UserId; // User ID
+  readonly processedBy?: UserId; // User ID
   readonly metadata?: Record<string, unknown>;
   readonly createdAt: Date;
   readonly processedAt?: Date;
@@ -318,7 +324,7 @@ export interface DiscountCode {
   readonly validFrom: Date;
   readonly validUntil: Date;
   readonly minPurchaseAmount?: number;
-  readonly applicablePlans?: readonly string[]; // Plan IDs
+  readonly applicablePlans?: readonly PlanId[]; // Plan IDs
   readonly applicableCountries?: readonly string[];
   readonly oneTimeUse: boolean;
   readonly isActive: boolean;
@@ -331,7 +337,7 @@ export interface DiscountCode {
  */
 export interface BillingAddress {
   readonly id: string;
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly fullName: string;
   readonly line1: string;
   readonly line2?: string;
@@ -348,7 +354,7 @@ export interface BillingAddress {
  * Request to create subscription
  */
 export interface CreateSubscriptionRequest {
-  readonly planId: string;
+  readonly planId: PlanId;
   readonly billingCycle: BillingCycle;
   readonly paymentMethodId?: string;
   readonly trialDays?: number;
@@ -360,7 +366,7 @@ export interface CreateSubscriptionRequest {
  * Request to update subscription
  */
 export interface UpdateSubscriptionRequest {
-  readonly planId?: string;
+  readonly planId?: PlanId;
   readonly billingCycle?: BillingCycle;
   readonly autoRenew?: boolean;
   readonly paymentMethodId?: string;
@@ -372,8 +378,8 @@ export interface UpdateSubscriptionRequest {
  */
 export interface UsageRecord {
   readonly id: string;
-  readonly subscriptionId: string;
-  readonly organizationId: string;
+  readonly subscriptionId: SubscriptionId;
+  readonly organizationId: OrganizationId;
   readonly metric: string;
   readonly quantity: number;
   readonly unitPrice: number;
@@ -389,8 +395,13 @@ export interface UsageRecord {
  */
 export interface BillingNotification {
   readonly id: string;
-  readonly organizationId: string;
-  readonly type: 'payment_failed' | 'invoice_created' | 'invoice_overdue' | 'renewal_reminder' | 'subscription_ending';
+  readonly organizationId: OrganizationId;
+  readonly type:
+    | 'payment_failed'
+    | 'invoice_created'
+    | 'invoice_overdue'
+    | 'renewal_reminder'
+    | 'subscription_ending';
   readonly title: string;
   readonly message: string;
   readonly status: 'pending' | 'sent' | 'failed';

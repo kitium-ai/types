@@ -1,8 +1,9 @@
 {
-  "name": "@kitium-ai/types",
+  "name": "@kitiumai/types",
   "version": "1.0.0",
   "description": "Enterprise-ready TypeScript types and interfaces for Kitium AI Product SaaS",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -14,6 +15,11 @@
       "import": "./dist/auth.js",
       "require": "./dist/auth.cjs",
       "types": "./dist/auth.d.ts"
+    },
+    "./auth/access": {
+      "import": "./dist/auth/access.js",
+      "require": "./dist/auth/access.cjs",
+      "types": "./dist/auth/access.d.ts"
     },
     "./user": {
       "import": "./dist/user.js",
@@ -35,35 +41,93 @@
       "require": "./dist/billing.cjs",
       "types": "./dist/billing.d.ts"
     },
+    "./billing/pricing": {
+      "import": "./dist/billing/pricing.js",
+      "require": "./dist/billing/pricing.cjs",
+      "types": "./dist/billing/pricing.d.ts"
+    },
     "./api": {
       "import": "./dist/api.js",
       "require": "./dist/api.cjs",
       "types": "./dist/api.d.ts"
+    },
+    "./api/contracts": {
+      "import": "./dist/api/contracts.js",
+      "require": "./dist/api/contracts.cjs",
+      "types": "./dist/api/contracts.d.ts"
+    },
+    "./api/errors": {
+      "import": "./dist/api/errors.js",
+      "require": "./dist/api/errors.cjs",
+      "types": "./dist/api/errors.d.ts"
     },
     "./errors": {
       "import": "./dist/errors.js",
       "require": "./dist/errors.cjs",
       "types": "./dist/errors.d.ts"
     },
+    "./services": {
+      "import": "./dist/services.js",
+      "require": "./dist/services.cjs",
+      "types": "./dist/services.d.ts"
+    },
+    "./auth/rbac": {
+      "import": "./dist/auth/rbac.js",
+      "require": "./dist/auth/rbac.cjs",
+      "types": "./dist/auth/rbac.d.ts"
+    },
+    "./auth/sso": {
+      "import": "./dist/auth/sso.js",
+      "require": "./dist/auth/sso.cjs",
+      "types": "./dist/auth/sso.d.ts"
+    },
+    "./auth/twofa": {
+      "import": "./dist/auth/twofa.js",
+      "require": "./dist/auth/twofa.cjs",
+      "types": "./dist/auth/twofa.d.ts"
+    },
     "./utils": {
       "import": "./dist/utils.js",
       "require": "./dist/utils.cjs",
       "types": "./dist/utils.d.ts"
+    },
+    "./primitives": {
+      "import": "./dist/primitives.js",
+      "require": "./dist/primitives.cjs",
+      "types": "./dist/primitives.d.ts"
     }
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:cjs": "tsc --module commonjs --outDir dist",
+    "build": "tsup --config tsup.config.ts",
     "type-check": "tsc --noEmit",
+    "typecheck": "pnpm run type-check",
+    "test:types": "tsd --files tests/**/*.test-d.ts",
+    "verify": "pnpm run lint && pnpm run test:types && pnpm run type-check",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "test": "echo \"No tests configured yet\"",
-    "prebuild": "npm run type-check",
-    "prepublishOnly": "npm run build && npm run lint"
+    "test:watch": "vitest watch",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "publish:set-token": "set-npm-token",
+    "publish:setup": "set-npm-token",
+    "publish:check": "npm whoami --registry https://registry.npmjs.org || npm login --registry https://registry.npmjs.org",
+    "publish:login": "npm login --registry https://registry.npmjs.org",
+    "publish:package": "pnpm run publish:check && pnpm publish --access public --no-git-checks --registry https://registry.npmjs.org",
+    "publish:package:token": "pnpm run publish:setup && pnpm publish --access public --no-git-checks --registry https://registry.npmjs.org",
+    "publish:package:otp": "pnpm run publish:check && pnpm publish --access public --no-git-checks --registry https://registry.npmjs.org --otp",
+    "publish:dry-run": "pnpm publish --access public --no-git-checks --dry-run --registry https://registry.npmjs.org",
+    "publish:dry-run:token": "pnpm run publish:setup && pnpm publish --access public --no-git-checks --dry-run --registry https://registry.npmjs.org",
+    "prebuild": "pnpm run type-check",
+    "prepublishOnly": "pnpm run verify && pnpm run build"
   },
   "keywords": [
     "types",
@@ -72,25 +136,63 @@
     "enterprise",
     "kitium",
     "api",
-    "interfaces"
+    "interfaces",
+    "typescript-types",
+    "type-definitions",
+    "authentication",
+    "billing",
+    "rbac",
+    "sso",
+    "2fa",
+    "email-service",
+    "file-service",
+    "search-service",
+    "database-types"
   ],
-  "author": "Kitium AI",
+  "author": {
+    "name": "Kitium AI",
+    "url": "https://kitium.ai"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kitium-ai/types.git"
+    "url": "https://github.com/kitium-ai/types.git",
+    "directory": "packages/utils/@kitiumai/types"
+  },
+  "homepage": "https://github.com/kitium-ai/types#readme",
+  "bugs": {
+    "url": "https://github.com/kitium-ai/types/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "engines": {
     "node": ">=16.0.0"
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "sideEffects": false,
   "dependencies": {
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@kitiumai/config": "^1.0.1",
+    "@kitiumai/lint": "^1.3.5",
+    "@kitiumai/logger": "1.5.0",
+    "@kitiumai/scripts": "^0.2.1",
+    "@kitiumai/test-core": "^1.0.1",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "eslint": "^8.55.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "tsd": "^0.31.0",
+    "tsup": "^8.2.4"
   }
 }

@@ -42,6 +42,7 @@ const user: User = {
 ```
 
 **Key entities:**
+
 - `User` - User profile with authentication status
 - `Organization` - Multi-tenant organization
 - `Team` - Teams within organizations
@@ -59,7 +60,7 @@ import {
   UserRegistrationRequest,
   UpdateUserProfileRequest,
   APIResponse,
-  PaginatedResponse
+  PaginatedResponse,
 } from '@kitium-ai/types';
 
 // Request types
@@ -96,6 +97,7 @@ const paginated: PaginatedResponse<User> = {
 ```
 
 **Key request/response types:**
+
 - `CreateOrganizationRequest` / `UpdateOrganizationRequest`
 - `CreateProductRequest` / `CreateFeatureRequest`
 - `CreateSubscriptionRequest` / `UpdateSubscriptionRequest`
@@ -125,7 +127,7 @@ try {
   console.log('Valid:', validatedData);
 } catch (error) {
   if (error instanceof z.ZodError) {
-    error.errors.forEach(err => {
+    error.errors.forEach((err) => {
       console.log(`${err.path}: ${err.message}`);
     });
   }
@@ -142,6 +144,7 @@ if (result.success) {
 ```
 
 **Available validators:**
+
 - Authentication: `LoginCredentialsSchema`, `PasswordResetConfirmSchema`, `MFAVerificationSchema`
 - Users: `UserRegistrationSchema`, `UpdateUserProfileSchema`
 - Organizations: `CreateOrganizationSchema`, `UpdateOrganizationSchema`
@@ -185,12 +188,14 @@ const userEntity: UserDB = {
 ```
 
 **Entity features:**
+
 - `BaseEntity` - Core fields (id, timestamps, version)
 - `AuditableEntity` - Extends BaseEntity with audit trail
 - Specific entities with database-optimized fields
 - `Repository<T>` interface for type-safe data access
 
 **Key database entities:**
+
 - `UserEntity` - User with password hash
 - `OrganizationEntity` - Organization data
 - `TeamEntity` - Team management
@@ -227,11 +232,7 @@ const paymentStatus: PaymentStatus = PaymentStatus.COMPLETED;
 ### Example 1: User Registration
 
 ```typescript
-import {
-  UserRegistrationSchema,
-  UserEntity,
-  Validators,
-} from '@kitium-ai/types';
+import { UserRegistrationSchema, UserEntity, Validators } from '@kitium-ai/types';
 
 // Frontend: Validate user input
 async function handleUserRegistration(formData: unknown) {
@@ -360,7 +361,10 @@ class UserRepository implements Repository<UserEntity> {
     return db.users.findOne({ id });
   }
 
-  async update(id: string, updates: Partial<Omit<UserEntity, keyof BaseEntity>>): Promise<UserEntity> {
+  async update(
+    id: string,
+    updates: Partial<Omit<UserEntity, keyof BaseEntity>>
+  ): Promise<UserEntity> {
     const user = await this.findById(id);
     if (!user) throw new Error('User not found');
 
@@ -666,6 +670,7 @@ For issues and feature requests, please visit: https://github.com/kitium-ai/type
 ## Changelog
 
 ### 1.0.0 (Current)
+
 - Initial release with comprehensive type system
 - Zod-based validators for runtime validation
 - Database entity types for persistence layer

@@ -38,7 +38,14 @@ export * from './errors';
 // Re-export utility types and helpers
 export * from './utils';
 
+// Primitive helpers and branded identifiers
+export * from './primitives';
+
+// Re-export service types (email, file, search, database)
+export * from './services';
+
 // Export validators and entities as namespaced modules
-export { Validators } from './validators';
+export { VALIDATORS } from './validators';
+export type { ValidatorTypes } from './validators';
 export type * as ValidatorSchemas from './validators';
 export type * as Entities from './entities';

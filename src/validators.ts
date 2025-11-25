@@ -6,73 +6,60 @@
 
 import { z } from 'zod';
 
+import { AuthMethod, Permission, UserRole } from './auth';
+import { BillingCycle, InvoiceStatus, PaymentStatus, SubscriptionStatus } from './billing';
+import { OrganizationPlan, OrganizationStatus, BillingPeriod } from './organization';
+import { FeatureTier, ProductStatus } from './product';
+import { AccountStatus, NotificationChannel } from './user';
+import { SUPPORTED_LOCALES } from './primitives';
+
 /**
  * Common validators
  */
-const EmailValidator = z.string().email('Invalid email format');
-const URLValidator = z.string().url('Invalid URL format').optional();
-const UUIDValidator = z.string().uuid('Invalid UUID format');
-const DateValidator = z.date().or(z.string().datetime());
-const PositiveNumberValidator = z.number().positive('Must be positive');
-const PercentageValidator = z.number().min(0).max(100, 'Must be between 0 and 100');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const EMAIL_VALIDATOR = z.string().email('Invalid email format');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const URL_VALIDATOR = z.string().url('Invalid URL format').optional();
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const UUID_VALIDATOR = z.string().uuid('Invalid UUID format');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const DATE_VALIDATOR = z.date().or(z.string().datetime());
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const POSITIVE_NUMBER_VALIDATOR = z.number().positive('Must be positive');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const PERCENTAGE_VALIDATOR = z.number().min(0).max(100, 'Must be between 0 and 100');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const CURSOR_VALIDATOR = z.string().min(10, 'Cursor must be at least 10 characters');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const LOCALE_SCHEMA = z.enum(SUPPORTED_LOCALES);
 
 /**
  * Auth validators
  */
-export const AuthMethodSchema = z.enum(['email', 'google', 'github', 'microsoft', 'saml', 'oidc']);
-export const UserRoleSchema = z.enum(['super_admin', 'admin', 'owner', 'manager', 'member', 'viewer', 'guest']);
-export const PermissionSchema = z.enum([
-  'org:create',
-  'org:read',
-  'org:update',
-  'org:delete',
-  'org:invite',
-  'org:settings',
-  'user:create',
-  'user:read',
-  'user:update',
-  'user:delete',
-  'user:role:manage',
-  'product:create',
-  'product:read',
-  'product:update',
-  'product:delete',
-  'product:publish',
-  'billing:read',
-  'billing:update',
-  'billing:invoice',
-  'team:create',
-  'team:read',
-  'team:update',
-  'team:delete',
-  'team:invite',
-  'settings:read',
-  'settings:update',
-  'settings:integrations',
-  'analytics:read',
-  'analytics:export',
-  'audit:read',
-  'audit:export',
-]);
+export const AuthMethodSchema = z.nativeEnum(AuthMethod);
+export const UserRoleSchema = z.nativeEnum(UserRole);
+export const PermissionSchema = z.nativeEnum(Permission);
 
 export const LoginCredentialsSchema = z.object({
-  email: EmailValidator,
+  email: EMAIL_VALIDATOR,
   password: z.string().min(8, 'Password must be at least 8 characters'),
   rememberMe: z.boolean().optional(),
 });
 
 export const PasswordResetRequestSchema = z.object({
-  email: EmailValidator,
+  email: EMAIL_VALIDATOR,
 });
 
-export const PasswordResetConfirmSchema = z.object({
-  token: z.string().min(10),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(8),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const PasswordResetConfirmSchema = z
+  .object({
+    token: z.string().min(10),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 export const MFAVerificationSchema = z.object({
   code: z.string().regex(/^\d{6}$/, 'Code must be 6 digits'),
@@ -83,15 +70,15 @@ export const MFAVerificationSchema = z.object({
 export const APIKeySchema = z.object({
   name: z.string().min(1).max(255),
   permissions: z.array(PermissionSchema),
-  expiresAt: DateValidator.optional(),
+  expiresAt: DATE_VALIDATOR.optional(),
 });
 
 /**
  * User validators
  */
-export const AccountStatusSchema = z.enum(['active', 'inactive', 'suspended', 'deleted', 'pending_verification', 'pending_invitation']);
+export const AccountStatusSchema = z.nativeEnum(AccountStatus);
 
-export const NotificationChannelSchema = z.enum(['email', 'sms', 'in_app', 'webhook', 'slack', 'teams']);
+export const NotificationChannelSchema = z.nativeEnum(NotificationChannel);
 
 export const NotificationPreferencesSchema = z.object({
   email: z.object({
@@ -108,34 +95,40 @@ export const NotificationPreferencesSchema = z.object({
   inApp: z.object({
     enabled: z.boolean(),
   }),
-  slack: z.object({
-    enabled: z.boolean(),
-    webhookUrl: URLValidator,
-    channels: z.array(z.string()),
-  }).optional(),
-  teams: z.object({
-    enabled: z.boolean(),
-    webhookUrl: URLValidator,
-  }).optional(),
+  slack: z
+    .object({
+      enabled: z.boolean(),
+      webhookUrl: URL_VALIDATOR,
+      channels: z.array(z.string()),
+    })
+    .optional(),
+  teams: z
+    .object({
+      enabled: z.boolean(),
+      webhookUrl: URL_VALIDATOR,
+    })
+    .optional(),
   timezone: z.string(),
-  language: z.enum(['en', 'es', 'fr', 'de', 'it', 'ja', 'zh', 'ru']),
+  language: LOCALE_SCHEMA,
 });
 
-export const UserRegistrationSchema = z.object({
-  email: EmailValidator,
-  firstName: z.string().min(1).max(100),
-  lastName: z.string().min(1).max(100),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(8),
-  acceptTerms: z.boolean().refine((v) => v === true, 'You must accept the terms'),
-  acceptPrivacy: z.boolean().refine((v) => v === true, 'You must accept the privacy policy'),
-  companyName: z.string().max(255).optional(),
-  timezone: z.string().optional(),
-  language: z.enum(['en', 'es', 'fr', 'de', 'it', 'ja', 'zh', 'ru']).optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const UserRegistrationSchema = z
+  .object({
+    email: EMAIL_VALIDATOR,
+    firstName: z.string().min(1).max(100),
+    lastName: z.string().min(1).max(100),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8),
+    acceptTerms: z.boolean().refine((v) => v === true, 'You must accept the terms'),
+    acceptPrivacy: z.boolean().refine((v) => v === true, 'You must accept the privacy policy'),
+    companyName: z.string().max(255).optional(),
+    timezone: z.string().optional(),
+    language: LOCALE_SCHEMA.optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 export const UpdateUserProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
@@ -146,19 +139,22 @@ export const UpdateUserProfileSchema = z.object({
   department: z.string().max(100).optional(),
   company: z.string().max(100).optional(),
   location: z.string().max(100).optional(),
-  phone: z.string().regex(/^\+?1?\d{9,15}$/, 'Invalid phone number format').optional(),
+  phone: z
+    .string()
+    .regex(/^\+?1?\d{9,15}$/, 'Invalid phone number format')
+    .optional(),
   timezone: z.string().optional(),
-  language: z.enum(['en', 'es', 'fr', 'de', 'it', 'ja', 'zh', 'ru']).optional(),
+  language: LOCALE_SCHEMA.optional(),
 });
 
 export const UserProfileSchema = z.object({
-  id: UUIDValidator,
-  email: EmailValidator,
+  id: UUID_VALIDATOR,
+  email: EMAIL_VALIDATOR,
   firstName: z.string(),
   lastName: z.string(),
   fullName: z.string(),
   avatar: z.string().optional(),
-  avatarUrl: URLValidator,
+  avatarUrl: URL_VALIDATOR,
   bio: z.string().optional(),
   title: z.string().optional(),
   department: z.string().optional(),
@@ -166,47 +162,52 @@ export const UserProfileSchema = z.object({
   location: z.string().optional(),
   phone: z.string().optional(),
   timezone: z.string(),
-  language: z.enum(['en', 'es', 'fr', 'de', 'it', 'ja', 'zh', 'ru']),
+  language: LOCALE_SCHEMA,
   twoFactorEnabled: z.boolean(),
   emailVerified: z.boolean(),
   phoneVerified: z.boolean(),
-  lastLogin: DateValidator.optional(),
-  createdAt: DateValidator,
-  updatedAt: DateValidator,
+  lastLogin: DATE_VALIDATOR.optional(),
+  createdAt: DATE_VALIDATOR,
+  updatedAt: DATE_VALIDATOR,
 });
 
 export const UserSchema = UserProfileSchema.extend({
   status: AccountStatusSchema,
   roles: z.array(UserRoleSchema),
   permissions: z.array(PermissionSchema),
-  mfaConfig: z.object({
-    enabled: z.boolean(),
-    method: z.enum(['totp', 'sms', 'email']),
-    secret: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    backupCodes: z.array(z.string()).optional(),
-    verified: z.boolean(),
-    createdAt: DateValidator,
-  }).optional(),
+  mfaConfig: z
+    .object({
+      enabled: z.boolean(),
+      method: z.enum(['totp', 'sms', 'email']),
+      secret: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      backupCodes: z.array(z.string()).optional(),
+      verified: z.boolean(),
+      createdAt: DATE_VALIDATOR,
+    })
+    .optional(),
   notificationPreferences: NotificationPreferencesSchema,
   authenticatedWith: z.array(AuthMethodSchema),
   isEmailVerified: z.boolean(),
   isPhoneVerified: z.boolean(),
   isSuperAdmin: z.boolean(),
-  deletedAt: DateValidator.optional(),
+  deletedAt: DATE_VALIDATOR.optional(),
 });
 
 /**
  * Organization validators
  */
-export const OrganizationPlanSchema = z.enum(['free', 'starter', 'professional', 'enterprise', 'custom']);
-export const OrganizationStatusSchema = z.enum(['active', 'inactive', 'suspended', 'deleted']);
+export const OrganizationPlanSchema = z.nativeEnum(OrganizationPlan);
+export const OrganizationStatusSchema = z.nativeEnum(OrganizationStatus);
 
 export const CreateOrganizationSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format').optional(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]+$/, 'Invalid slug format')
+    .optional(),
   description: z.string().max(500).optional(),
-  website: URLValidator,
+  website: URL_VALIDATOR,
   country: z.string().length(2).optional(),
   timezone: z.string().optional(),
   plan: OrganizationPlanSchema.optional(),
@@ -216,8 +217,8 @@ export const UpdateOrganizationSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   description: z.string().max(500).optional(),
   logo: z.string().optional(),
-  website: URLValidator,
-  email: EmailValidator.optional(),
+  website: URL_VALIDATOR,
+  email: EMAIL_VALIDATOR.optional(),
   phone: z.string().optional(),
   country: z.string().length(2).optional(),
   state: z.string().optional(),
@@ -228,14 +229,14 @@ export const UpdateOrganizationSchema = z.object({
 });
 
 export const OrganizationSchema = z.object({
-  id: UUIDValidator,
+  id: UUID_VALIDATOR,
   name: z.string(),
   slug: z.string(),
   description: z.string().optional(),
   logo: z.string().optional(),
-  logoUrl: URLValidator,
-  website: URLValidator,
-  email: EmailValidator.optional(),
+  logoUrl: URL_VALIDATOR,
+  website: URL_VALIDATOR,
+  email: EMAIL_VALIDATOR.optional(),
   phone: z.string().optional(),
   country: z.string().optional(),
   state: z.string().optional(),
@@ -249,27 +250,30 @@ export const OrganizationSchema = z.object({
   maxSeats: z.number().int().positive(),
   features: z.array(z.string()),
   owner: z.object({
-    id: UUIDValidator,
-    email: EmailValidator,
+    id: UUID_VALIDATOR,
+    email: EMAIL_VALIDATOR,
     firstName: z.string(),
     lastName: z.string(),
   }),
   members: z.number().int().nonnegative(),
   teams: z.number().int().nonnegative(),
-  billingPeriod: z.enum(['monthly', 'yearly', 'custom']),
-  trialEndsAt: DateValidator.optional(),
-  createdAt: DateValidator,
-  updatedAt: DateValidator,
+  billingPeriod: z.nativeEnum(BillingPeriod),
+  trialEndsAt: DATE_VALIDATOR.optional(),
+  createdAt: DATE_VALIDATOR,
+  updatedAt: DATE_VALIDATOR,
 });
 
 /**
  * Product validators
  */
-export const ProductStatusSchema = z.enum(['draft', 'in_development', 'beta', 'released', 'deprecated', 'archived', 'discontinued']);
+export const ProductStatusSchema = z.nativeEnum(ProductStatus);
 
 export const CreateProductSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .optional(),
   description: z.string().min(10).max(2000),
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -277,60 +281,63 @@ export const CreateProductSchema = z.object({
 
 export const CreateFeatureSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .optional(),
   description: z.string().min(10),
-  tier: z.enum(['free', 'starter', 'professional', 'enterprise', 'all']),
+  tier: z.nativeEnum(FeatureTier),
   priority: z.number().int().min(1).max(5),
-  epic: UUIDValidator.optional(),
+  epic: UUID_VALIDATOR.optional(),
   acceptanceCriteria: z.array(z.string()).optional(),
 });
 
 /**
  * Billing validators
  */
-export const SubscriptionStatusSchema = z.enum(['active', 'trial', 'past_due', 'paused', 'canceled', 'expired', 'pending']);
-export const PaymentStatusSchema = z.enum(['pending', 'processing', 'completed', 'failed', 'refunded', 'disputed']);
-export const InvoiceStatusSchema = z.enum(['draft', 'sent', 'viewed', 'partial_paid', 'paid', 'overdue', 'canceled', 'refunded']);
+export const SubscriptionStatusSchema = z.nativeEnum(SubscriptionStatus);
+export const PaymentStatusSchema = z.nativeEnum(PaymentStatus);
+export const InvoiceStatusSchema = z.nativeEnum(InvoiceStatus);
 
 export const CreateSubscriptionSchema = z.object({
-  planId: UUIDValidator,
-  billingCycle: z.enum(['monthly', 'quarterly', 'annually', 'custom']),
-  paymentMethodId: UUIDValidator.optional(),
+  planId: UUID_VALIDATOR,
+  billingCycle: z.nativeEnum(BillingCycle),
+  paymentMethodId: UUID_VALIDATOR.optional(),
   trialDays: z.number().int().positive().optional(),
   discountCode: z.string().optional(),
   metadata: z.record(z.any()).optional(),
 });
 
 export const UpdateSubscriptionSchema = z.object({
-  planId: UUIDValidator.optional(),
-  billingCycle: z.enum(['monthly', 'quarterly', 'annually', 'custom']).optional(),
+  planId: UUID_VALIDATOR.optional(),
+  billingCycle: z.nativeEnum(BillingCycle).optional(),
   autoRenew: z.boolean().optional(),
-  paymentMethodId: UUIDValidator.optional(),
+  paymentMethodId: UUID_VALIDATOR.optional(),
   metadata: z.record(z.any()).optional(),
 });
 
 export const PricingPlanSchema = z.object({
-  id: UUIDValidator,
+  id: UUID_VALIDATOR,
   name: z.string(),
   slug: z.string(),
   description: z.string(),
   features: z.array(z.string()),
   price: z.object({
-    amount: PositiveNumberValidator,
+    amount: POSITIVE_NUMBER_VALIDATOR,
     currency: z.string().length(3),
-    interval: z.enum(['monthly', 'quarterly', 'annually', 'custom']),
+    interval: z.nativeEnum(BillingCycle),
   }),
-  setupFee: PositiveNumberValidator.optional(),
+  setupFee: POSITIVE_NUMBER_VALIDATOR.optional(),
   tier: z.enum(['free', 'starter', 'professional', 'enterprise']),
   maxUsers: z.number().int().positive().optional(),
   maxProjects: z.number().int().positive().optional(),
   maxStorage: z.number().int().positive().optional(),
   maxApiCalls: z.number().int().positive().optional(),
   supportLevel: z.enum(['community', 'standard', 'premium', 'enterprise']),
-  slaUptimePercent: PercentageValidator.optional(),
+  slaUptimePercent: PERCENTAGE_VALIDATOR.optional(),
   isPublic: z.boolean(),
-  createdAt: DateValidator,
-  updatedAt: DateValidator,
+  createdAt: DATE_VALIDATOR,
+  updatedAt: DATE_VALIDATOR,
 });
 
 /**
@@ -347,39 +354,44 @@ export const ListQueryParamsSchema = z.object({
   filter: z.record(z.any()).optional(),
   include: z.array(z.string()).optional(),
   exclude: z.array(z.string()).optional(),
+  cursor: CURSOR_VALIDATOR.optional(),
 });
 
 export const FileUploadSchema = z.object({
-  id: UUIDValidator,
+  id: UUID_VALIDATOR,
   name: z.string(),
   mimeType: z.string(),
   size: z.number().int().positive(),
   url: z.string().url(),
-  uploadedAt: DateValidator,
-  uploadedBy: UUIDValidator,
-  metadata: z.object({
-    width: z.number().int().positive().optional(),
-    height: z.number().int().positive().optional(),
-    duration: z.number().positive().optional(),
-  }).optional(),
+  uploadedAt: DATE_VALIDATOR,
+  uploadedBy: UUID_VALIDATOR,
+  metadata: z
+    .object({
+      width: z.number().int().positive().optional(),
+      height: z.number().int().positive().optional(),
+      duration: z.number().positive().optional(),
+    })
+    .optional(),
 });
 
 export const WebhookConfigSchema = z.object({
-  id: UUIDValidator,
-  organizationId: UUIDValidator,
+  id: UUID_VALIDATOR,
+  organizationId: UUID_VALIDATOR,
   url: z.string().url(),
   events: z.array(z.string()).min(1),
   secret: z.string().min(32),
   headers: z.record(z.string()).optional(),
   isActive: z.boolean(),
-  retryPolicy: z.object({
-    maxRetries: z.number().int().positive(),
-    backoffMultiplier: PositiveNumberValidator,
-    initialDelayMs: z.number().int().positive(),
-  }).optional(),
-  lastTriggeredAt: DateValidator.optional(),
-  createdAt: DateValidator,
-  updatedAt: DateValidator,
+  retryPolicy: z
+    .object({
+      maxRetries: z.number().int().positive(),
+      backoffMultiplier: POSITIVE_NUMBER_VALIDATOR,
+      initialDelayMs: z.number().int().positive(),
+    })
+    .optional(),
+  lastTriggeredAt: DATE_VALIDATOR.optional(),
+  createdAt: DATE_VALIDATOR,
+  updatedAt: DATE_VALIDATOR,
 });
 
 /**
@@ -422,7 +434,13 @@ export const ErrorResponseSchema = z.object({
 /**
  * Validation helper utilities
  */
-export const createValidator = <T>(schema: z.ZodSchema<T>) => {
+export const createValidator = <T>(
+  schema: z.ZodSchema<T>
+): {
+  parse: (data: unknown) => { success: true; data: T } | { success: false; error: z.ZodError };
+  validate: (data: unknown) => T;
+  safeParse: (data: unknown) => z.SafeParseReturnType<unknown, T>;
+} => {
   return {
     parse: (data: unknown): { success: true; data: T } | { success: false; error: z.ZodError } => {
       try {
@@ -447,7 +465,8 @@ export const createValidator = <T>(schema: z.ZodSchema<T>) => {
 /**
  * Pre-instantiated validators for common types
  */
-export const Validators = {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const VALIDATORS = {
   loginCredentials: createValidator(LoginCredentialsSchema),
   userRegistration: createValidator(UserRegistrationSchema),
   updateUserProfile: createValidator(UpdateUserProfileSchema),
@@ -460,4 +479,55 @@ export const Validators = {
   listQueryParams: createValidator(ListQueryParamsSchema),
   fileUpload: createValidator(FileUploadSchema),
   webhookConfig: createValidator(WebhookConfigSchema),
+};
+
+/**
+ * Type exports for validators (using module pattern instead of namespace)
+ * Use: import type { ValidatorTypes } from '@kitiumai/types';
+ * Then: type LoginCreds = ValidatorTypes['loginCredentials'];
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type ValidatorTypes = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  loginCredentials: z.infer<typeof LoginCredentialsSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  passwordResetRequest: z.infer<typeof PasswordResetRequestSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  passwordResetConfirm: z.infer<typeof PasswordResetConfirmSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  mfaVerification: z.infer<typeof MFAVerificationSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  apiKey: z.infer<typeof APIKeySchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  userRegistration: z.infer<typeof UserRegistrationSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  updateUserProfile: z.infer<typeof UpdateUserProfileSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  userProfile: z.infer<typeof UserProfileSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  user: z.infer<typeof UserSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  createOrganization: z.infer<typeof CreateOrganizationSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  updateOrganization: z.infer<typeof UpdateOrganizationSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  organization: z.infer<typeof OrganizationSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  createProduct: z.infer<typeof CreateProductSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  createFeature: z.infer<typeof CreateFeatureSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  createSubscription: z.infer<typeof CreateSubscriptionSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  updateSubscription: z.infer<typeof UpdateSubscriptionSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  pricingPlan: z.infer<typeof PricingPlanSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  listQueryParams: z.infer<typeof ListQueryParamsSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  fileUpload: z.infer<typeof FileUploadSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  webhookConfig: z.infer<typeof WebhookConfigSchema>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  errorResponse: z.infer<typeof ErrorResponseSchema>;
 };

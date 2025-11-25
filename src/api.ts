@@ -1,3 +1,5 @@
+import type { IsoDateTimeString, OrganizationId, PaginationCursor, UserId } from './primitives';
+
 /**
  * API Request/Response Types
  * Standard API communication types and patterns
@@ -46,7 +48,7 @@ export interface APIResponse<T = unknown> {
   readonly data?: T;
   readonly error?: APIError;
   readonly metadata?: ResponseMetadata;
-  readonly timestamp: string;
+  readonly timestamp: IsoDateTimeString;
 }
 
 /**
@@ -55,7 +57,7 @@ export interface APIResponse<T = unknown> {
 export interface ResponseMetadata {
   readonly requestId: string;
   readonly version: string;
-  readonly timestamp: string;
+  readonly timestamp: IsoDateTimeString;
   readonly duration: number; // milliseconds
   readonly pagination?: {
     readonly page: number;
@@ -108,6 +110,7 @@ export interface ListQueryParams {
   readonly filter?: Record<string, unknown>;
   readonly include?: readonly string[]; // Relations to include
   readonly exclude?: readonly string[]; // Fields to exclude
+  readonly cursor?: PaginationCursor;
 }
 
 /**
@@ -129,8 +132,8 @@ export interface FileUpload {
   readonly mimeType: string;
   readonly size: number;
   readonly url: string;
-  readonly uploadedAt: Date;
-  readonly uploadedBy: string; // User ID
+  readonly uploadedAt: IsoDateTimeString;
+  readonly uploadedBy: UserId; // User ID
   readonly metadata?: {
     readonly width?: number;
     readonly height?: number;
@@ -144,11 +147,11 @@ export interface FileUpload {
 export interface WebhookPayload {
   readonly id: string;
   readonly event: string;
-  readonly timestamp: Date;
+  readonly timestamp: IsoDateTimeString;
   readonly data: Record<string, unknown>;
   readonly previousData?: Record<string, unknown>;
-  readonly organizationId: string;
-  readonly userId?: string;
+  readonly organizationId: OrganizationId;
+  readonly userId?: UserId;
   readonly metadata?: Record<string, unknown>;
 }
 
@@ -157,7 +160,7 @@ export interface WebhookPayload {
  */
 export interface WebhookConfig {
   readonly id: string;
-  readonly organizationId: string;
+  readonly organizationId: OrganizationId;
   readonly url: string;
   readonly events: readonly string[];
   readonly secret: string;
@@ -168,9 +171,9 @@ export interface WebhookConfig {
     readonly backoffMultiplier: number;
     readonly initialDelayMs: number;
   };
-  readonly lastTriggeredAt?: Date;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
+  readonly lastTriggeredAt?: IsoDateTimeString;
+  readonly createdAt: IsoDateTimeString;
+  readonly updatedAt: IsoDateTimeString;
 }
 
 /**
@@ -185,9 +188,9 @@ export interface WebhookDelivery {
   readonly response?: string;
   readonly error?: string;
   readonly retryCount: number;
-  readonly nextRetryAt?: Date;
-  readonly deliveredAt?: Date;
-  readonly timestamp: Date;
+  readonly nextRetryAt?: IsoDateTimeString;
+  readonly deliveredAt?: IsoDateTimeString;
+  readonly timestamp: IsoDateTimeString;
 }
 
 /**
@@ -195,12 +198,12 @@ export interface WebhookDelivery {
  */
 export interface RequestContext {
   readonly requestId: string;
-  readonly userId?: string;
-  readonly organizationId?: string;
+  readonly userId?: UserId;
+  readonly organizationId?: OrganizationId;
   readonly ipAddress: string;
   readonly userAgent: string;
   readonly origin?: string;
-  readonly timestamp: Date;
+  readonly timestamp: IsoDateTimeString;
 }
 
 /**
@@ -228,7 +231,7 @@ export interface BatchRequestItem {
 export interface BatchResponse {
   readonly id: string;
   readonly responses: readonly BatchResponseItem[];
-  readonly timestamp: Date;
+  readonly timestamp: IsoDateTimeString;
 }
 
 /**
@@ -246,7 +249,20 @@ export interface BatchResponseItem {
  */
 export interface FilterSpec {
   readonly field: string;
-  readonly operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'contains' | 'startsWith' | 'endsWith' | 'exists' | 'regex';
+  readonly operator:
+    | 'eq'
+    | 'ne'
+    | 'gt'
+    | 'gte'
+    | 'lt'
+    | 'lte'
+    | 'in'
+    | 'nin'
+    | 'contains'
+    | 'startsWith'
+    | 'endsWith'
+    | 'exists'
+    | 'regex';
   readonly value: unknown;
   readonly caseSensitive?: boolean;
 }
@@ -264,7 +280,7 @@ export interface SortSpec {
  */
 export interface HealthCheck {
   readonly status: 'healthy' | 'degraded' | 'unhealthy';
-  readonly timestamp: Date;
+  readonly timestamp: IsoDateTimeString;
   readonly uptime: number; // seconds
   readonly version: string;
   readonly services?: {
@@ -282,7 +298,7 @@ export interface HealthCheck {
 export interface RateLimitInfo {
   readonly limit: number;
   readonly remaining: number;
-  readonly reset: Date;
+  readonly reset: IsoDateTimeString;
   readonly retryAfter?: number;
 }
 
@@ -330,11 +346,11 @@ export interface FeatureFlag {
   readonly enabled: boolean;
   readonly percentage?: number; // 0-100 for gradual rollout
   readonly targetAudience?: {
-    readonly userIds?: readonly string[];
-    readonly organizationIds?: readonly string[];
+    readonly userIds?: readonly UserId[];
+    readonly organizationIds?: readonly OrganizationId[];
     readonly regions?: readonly string[];
   };
-  readonly expiresAt?: Date;
+  readonly expiresAt?: IsoDateTimeString;
 }
 
 /**
@@ -349,3 +365,6 @@ export interface RateLimitPolicy {
   readonly burstLimit?: number;
   readonly whitelistedIps?: readonly string[];
 }
+
+// Re-export API error types
+export * from './api/errors';

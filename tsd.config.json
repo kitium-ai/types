@@ -1,0 +1,6 @@
+{
+  "entry": {
+    "files": ["tests/**/*.test-d.ts"]
+  },
+  "tsconfig": "tsconfig.json"
+}

@@ -1,3 +1,5 @@
+import type { ApiKeyId, OrganizationId, SessionId, TeamId, UserId } from './primitives';
+
 /**
  * Authentication Types
  * Core authentication and user session types for enterprise SaaS applications
@@ -84,7 +86,7 @@ export enum Permission {
  * JWT Token payload structure
  */
 export interface JWTPayload {
-  readonly sub: string; // Subject (user ID)
+  readonly sub: UserId; // Subject (user ID)
   readonly email: string;
   readonly aud: string; // Audience
   readonly iss: string; // Issuer
@@ -92,18 +94,18 @@ export interface JWTPayload {
   readonly exp: number; // Expiration time
   readonly roles: readonly UserRole[];
   readonly permissions: readonly Permission[];
-  readonly orgId: string;
-  readonly teamIds: readonly string[];
+  readonly orgId: OrganizationId;
+  readonly teamIds: readonly TeamId[];
 }
 
 /**
  * Session information stored after authentication
  */
 export interface Session {
-  readonly id: string;
-  readonly userId: string;
-  readonly orgId: string;
-  readonly teamIds: readonly string[];
+  readonly id: SessionId;
+  readonly userId: UserId;
+  readonly orgId: OrganizationId;
+  readonly teamIds: readonly TeamId[];
   readonly roles: readonly UserRole[];
   readonly permissions: readonly Permission[];
   readonly authMethod: AuthMethod;
@@ -179,7 +181,7 @@ export interface AuthResponse {
   readonly expiresIn: number;
   readonly tokenType: 'Bearer' | 'Basic';
   readonly user: {
-    readonly id: string;
+    readonly id: UserId;
     readonly email: string;
     readonly firstName: string;
     readonly lastName: string;
@@ -236,9 +238,9 @@ export interface MFAVerification {
  * API Key for authentication
  */
 export interface APIKey {
-  readonly id: string;
-  readonly userId: string;
-  readonly organizationId: string;
+  readonly id: ApiKeyId;
+  readonly userId: UserId;
+  readonly organizationId: OrganizationId;
   readonly name: string;
   readonly key: string;
   readonly secret: string;
@@ -265,10 +267,15 @@ export interface RateLimitConfig {
  * Authorization context for request handling
  */
 export interface AuthorizationContext {
-  readonly userId: string;
-  readonly orgId: string;
-  readonly teamIds: readonly string[];
+  readonly userId: UserId;
+  readonly orgId: OrganizationId;
+  readonly teamIds: readonly TeamId[];
   readonly roles: readonly UserRole[];
   readonly permissions: readonly Permission[];
   readonly session: Session;
 }
+
+// Re-export enhanced auth types
+export * from './auth/rbac';
+export * from './auth/sso';
+export * from './auth/twofa';

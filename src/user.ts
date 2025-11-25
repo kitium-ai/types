@@ -4,6 +4,7 @@
  */
 
 import type { UserRole, Permission, MFAConfig, AuthMethod } from './auth';
+import type { OrganizationId, SupportedLocale, TeamId, UserId } from './primitives';
 
 /**
  * Account status for user lifecycle management
@@ -57,14 +58,14 @@ export interface NotificationPreferences {
     readonly webhookUrl: string;
   };
   readonly timezone: string;
-  readonly language: 'en' | 'es' | 'fr' | 'de' | 'it' | 'ja' | 'zh' | 'ru';
+  readonly language: SupportedLocale;
 }
 
 /**
  * User profile information
  */
 export interface UserProfile {
-  readonly id: string;
+  readonly id: UserId;
   readonly email: string;
   readonly firstName: string;
   readonly lastName: string;
@@ -78,7 +79,7 @@ export interface UserProfile {
   readonly location?: string;
   readonly phone?: string;
   readonly timezone: string;
-  readonly language: 'en' | 'es' | 'fr' | 'de' | 'it' | 'ja' | 'zh' | 'ru';
+  readonly language: SupportedLocale;
   readonly twoFactorEnabled: boolean;
   readonly emailVerified: boolean;
   readonly phoneVerified: boolean;
@@ -110,8 +111,8 @@ export interface UserInvitation {
   readonly id: string;
   readonly email: string;
   readonly invitedBy: string;
-  readonly organizationId: string;
-  readonly teamIds?: readonly string[];
+  readonly organizationId: OrganizationId;
+  readonly teamIds?: readonly TeamId[];
   readonly roles: readonly UserRole[];
   readonly permissions: readonly Permission[];
   readonly token: string;
@@ -127,7 +128,7 @@ export interface UserInvitation {
  * User account settings
  */
 export interface UserSettings {
-  readonly userId: string;
+  readonly userId: UserId;
   readonly privateProfile: boolean;
   readonly allowEmailMarketing: boolean;
   readonly twoFactorRequired: boolean;
@@ -150,8 +151,8 @@ export interface UserSettings {
  */
 export interface UserActivityLog {
   readonly id: string;
-  readonly userId: string;
-  readonly organizationId: string;
+  readonly userId: UserId;
+  readonly organizationId: OrganizationId;
   readonly action: string;
   readonly resource: string;
   readonly resourceId: string;
@@ -168,7 +169,7 @@ export interface UserActivityLog {
  */
 export interface AuthenticationHistory {
   readonly id: string;
-  readonly userId: string;
+  readonly userId: UserId;
   readonly method: AuthMethod;
   readonly ipAddress: string;
   readonly userAgent: string;
@@ -192,7 +193,7 @@ export interface UpdateUserProfileRequest {
   readonly location?: string;
   readonly phone?: string;
   readonly timezone?: string;
-  readonly language?: 'en' | 'es' | 'fr' | 'de' | 'it' | 'ja' | 'zh' | 'ru';
+  readonly language?: SupportedLocale;
 }
 
 /**
@@ -208,14 +209,14 @@ export interface UserRegistrationRequest {
   readonly acceptPrivacy: boolean;
   readonly companyName?: string;
   readonly timezone?: string;
-  readonly language?: 'en' | 'es' | 'fr' | 'de' | 'it' | 'ja' | 'zh' | 'ru';
+  readonly language?: SupportedLocale;
 }
 
 /**
  * User export data request for GDPR compliance
  */
 export interface UserDataExportRequest {
-  readonly userId: string;
+  readonly userId: UserId;
   readonly format: 'json' | 'csv' | 'xml';
   readonly includeActivityLogs: boolean;
   readonly includeSessions: boolean;
@@ -227,7 +228,7 @@ export interface UserDataExportRequest {
  * User deletion request with compliance
  */
 export interface UserDeletionRequest {
-  readonly userId: string;
+  readonly userId: UserId;
   readonly reason?: string;
   readonly anonymize: boolean;
   readonly retentionDays: number;
@@ -239,9 +240,9 @@ export interface UserDeletionRequest {
  * User workspace preferences
  */
 export interface WorkspacePreferences {
-  readonly userId: string;
-  readonly defaultOrganizationId: string;
-  readonly defaultTeamId?: string;
+  readonly userId: UserId;
+  readonly defaultOrganizationId: OrganizationId;
+  readonly defaultTeamId?: TeamId;
   readonly sidebarCollapsed: boolean;
   readonly themeMode: 'light' | 'dark' | 'auto';
   readonly compactView: boolean;
@@ -255,7 +256,7 @@ export interface WorkspacePreferences {
  */
 export interface UserDevice {
   readonly id: string;
-  readonly userId: string;
+  readonly userId: UserId;
   readonly deviceName: string;
   readonly deviceType: 'mobile' | 'tablet' | 'desktop' | 'unknown';
   readonly osType: string;

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Type System
+
 - **Domain Models** - Comprehensive business entity types across all domains:
   - User management (User, UserProfile, UserSettings, NotificationPreferences)
   - Organization & Team management (Organization, Team, OrganizationMember, TeamMember)
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Authentication (Session, APIKey, MFAConfig, AuthResponse)
 
 #### Validation Layer (Zod-based)
+
 - **Validation Schemas** (`src/validators.ts`) with 30+ Zod validators:
   - Authentication validators: `LoginCredentialsSchema`, `PasswordResetConfirmSchema`, `MFAVerificationSchema`, `APIKeySchema`
   - User validators: `UserRegistrationSchema`, `UpdateUserProfileSchema`, `NotificationPreferencesSchema`
@@ -34,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Type inference support: `z.infer<typeof SchemaName>`
 
 #### Database Entity Types
+
 - **Database Entity Definitions** (`src/entities.ts`):
   - `BaseEntity` - Core entity interface with id, timestamps, and version
   - `AuditableEntity` - Extended entity with full audit trail (createdBy, updatedBy, deletedAt, deletedBy)
@@ -51,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - EntityMap type for managing entity relationships
 
 #### API Request/Response Types
+
 - Standard API communication patterns:
   - `APIResponse<T>` - Standardized response wrapper with success flag
   - `PaginatedResponse<T>` - Pagination support with metadata
@@ -61,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `HealthCheck`, `RateLimitInfo`, `CacheControl`, `CORSConfig` - Infrastructure types
 
 #### Authentication & Authorization
+
 - Comprehensive authentication types:
   - `JWTPayload` - JWT token structure
   - `Session` - User session information
@@ -72,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `MFAConfig` & `MFAVerification` - Multi-factor authentication
 
 #### Role-Based Access Control
+
 - **UserRole** enum with 7 hierarchical roles:
   - SUPER_ADMIN, ADMIN, OWNER, MANAGER, MEMBER, VIEWER, GUEST
 
@@ -86,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Audit: AUDIT_READ, AUDIT_EXPORT
 
 #### Billing & Subscription Types
+
 - **Subscription Management**:
   - `PricingPlan` - Plan definitions with features and pricing
   - `Subscription` - Subscription records with billing cycle
@@ -107,6 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `TaxType`: VAT, GST, HST, PST, SALES_TAX, USE_TAX
 
 #### Error Handling
+
 - **Error Types**:
   - `ApplicationError` - Base error interface with severity levels
   - Specialized error types:
@@ -132,6 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ErrorEvent` - Error event for tracking services
 
 #### Utility Types
+
 - **Generic Utility Types**:
   - `Result<T, E>` - Success/failure result type
   - `Optional<T>` - Nullable type alias
@@ -180,6 +189,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Metadata` - Arbitrary metadata
 
 #### Product & Feature Management
+
 - **Product Lifecycle**:
   - `Product` - Product definition with versioning
   - `ProductVersion` - Version tracking with release types
@@ -201,9 +211,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `FeatureRequest` - User feature requests
 
 #### Dependencies
+
 - **Zod** (^3.22.4) - Runtime schema validation and type inference
 
 #### Package Configuration
+
 - Comprehensive `package.json` with:
   - ESM and CommonJS export support
   - Per-module exports for tree-shaking
@@ -212,6 +224,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Build and linting scripts
 
 #### Documentation
+
 - **README.md** - Comprehensive documentation including:
   - Architecture overview
   - Installation instructions
@@ -222,11 +235,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Contributing guidelines
 
 ### Changed
+
 - Renamed `Subscription` to `ObserverSubscription` in utils.ts to avoid naming conflicts with billing Subscription type
 
 ### Technical Details
 
 #### TypeScript Configuration
+
 - Target: ES2020
 - Strict mode enabled
 - Comprehensive tsconfig with:
@@ -236,6 +251,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Module resolution
 
 #### Export Strategy
+
 - **Main entry point** - All public types
 - **Namespaced exports**:
   - `ValidatorSchemas` - All Zod schemas
@@ -244,6 +260,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Per-module exports** - For better tree-shaking
 
 #### Code Quality
+
 - TypeScript strict mode compliance
 - ESLint configuration
 - Type safety throughout
@@ -251,6 +268,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive JSDoc documentation
 
 ### Verified
+
 - ✅ All TypeScript compilation checks pass
 - ✅ No unused variables or imports
 - ✅ Type-safe exports with zero conflicts
@@ -260,6 +278,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned Features
+
 - Additional validation schemas for emerging domains
 - Database migration utilities
 - ORM integration examples (TypeORM, Prisma)
@@ -271,6 +290,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-tenancy utilities
 
 ### Future Improvements
+
 - Add optional peer dependency on @kitium-ai/schemas for schema composition
 - Integration examples with popular SaaS frameworks
 - Plugin system for custom validators
