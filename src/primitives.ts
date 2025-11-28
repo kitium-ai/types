@@ -43,7 +43,7 @@ export const toIsoDateTimeString = (value: Date | IsoDateTimeString): IsoDateTim
 /**
  * Internationalization primitives.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'de', 'it', 'ja', 'zh', 'ru'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 

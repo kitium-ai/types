@@ -23,7 +23,7 @@ export interface SSOConfig {
  * OIDC provider configuration
  * Note: Properties use snake_case to match OIDC/OAuth2 standard specifications
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export interface OIDCProvider {
   readonly id: string;
   readonly type: 'oidc';
@@ -57,7 +57,7 @@ export interface OIDCProvider {
  * SAML provider configuration
  * Note: Properties use snake_case to match SAML standard specifications
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export interface SAMLProvider {
   readonly id: string;
   readonly type: 'saml';
@@ -133,7 +133,7 @@ export interface SSOLink {
  * OIDC token response
  * Note: Properties use snake_case to match OAuth2/OIDC standard token response format
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export interface OIDCTokenResponse {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly access_token: string;
@@ -152,7 +152,7 @@ export interface OIDCTokenResponse {
  * OIDC user info
  * Note: Properties use snake_case to match OIDC standard userinfo claims
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export interface OIDCUserInfo {
   readonly sub: string;
   readonly name?: string;

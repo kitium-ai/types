@@ -95,6 +95,11 @@
       "import": "./dist/primitives.js",
       "require": "./dist/primitives.cjs",
       "types": "./dist/primitives.d.ts"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "require": "./dist/logger.cjs",
+      "types": "./dist/logger.d.ts"
     }
   },
   "files": [
@@ -150,14 +155,12 @@
     "database-types"
   ],
   "author": {
-    "name": "Kitium AI",
-    "url": "https://kitium.ai"
+    "name": "Kitium AI"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kitium-ai/types.git",
-    "directory": "packages/utils/@kitiumai/types"
+    "url": "https://github.com/kitium-ai/types.git"
   },
   "homepage": "https://github.com/kitium-ai/types#readme",
   "bugs": {
@@ -179,19 +182,20 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@kitiumai/logger": "^2.0.0"
   },
   "devDependencies": {
-    "@kitiumai/config": "^1.0.1",
-    "@kitiumai/lint": "^1.3.5",
-    "@kitiumai/logger": "1.5.0",
-    "@kitiumai/scripts": "^0.2.1",
-    "@kitiumai/test-core": "^1.0.1",
+    "@kitiumai/config": "^2.0.0",
+    "@kitiumai/lint": "^2.0.0",
+    "@kitiumai/scripts": "^1.0.0",
+    "@kitiumai/vitest-helpers": "^2.0.0",
     "@types/node": "^24.10.1",
-    "@typescript-eslint/eslint-plugin": "^6.13.2",
-    "@typescript-eslint/parser": "^6.13.2",
-    "eslint": "^8.55.0",
-    "typescript": "^5.3.2",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "^9.15.0",
+    "graphql": "^16.12.0",
+    "typescript": "^5.6.0",
     "tsd": "^0.31.0",
     "tsup": "^8.2.4"
   }

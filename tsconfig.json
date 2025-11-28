@@ -1,19 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@kitiumai/config/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2020",
+    // Override base config for types package specific needs
     "module": "ES2020",
     "lib": ["ES2020"],
-    "declaration": true,
-    "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "useDefineForClassFields": true,
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
@@ -21,17 +14,13 @@
       "@kitiumai/types/*": ["./src/*"]
     },
     "noEmit": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "declaration": true,
     "emitDeclarationOnly": false,
-    "sourceMap": true
+    // Stricter checks for a types package
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitOverride": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "tests"]
 }

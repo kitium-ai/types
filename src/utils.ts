@@ -69,7 +69,7 @@ export type Tuple<T, N extends number> = N extends N
     ? readonly T[]
     : TupleOf<T, N, readonly []>
   : never;
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 type TupleOf<T, N extends number, R extends readonly unknown[]> = R['length'] extends N
   ? R
   : TupleOf<T, N, readonly [...R, T]>;

@@ -486,48 +486,47 @@ export const VALIDATORS = {
  * Use: import type { ValidatorTypes } from '@kitiumai/types';
  * Then: type LoginCreds = ValidatorTypes['loginCredentials'];
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export type ValidatorTypes = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   loginCredentials: z.infer<typeof LoginCredentialsSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   passwordResetRequest: z.infer<typeof PasswordResetRequestSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   passwordResetConfirm: z.infer<typeof PasswordResetConfirmSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   mfaVerification: z.infer<typeof MFAVerificationSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   apiKey: z.infer<typeof APIKeySchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   userRegistration: z.infer<typeof UserRegistrationSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   updateUserProfile: z.infer<typeof UpdateUserProfileSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   userProfile: z.infer<typeof UserProfileSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   user: z.infer<typeof UserSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   createOrganization: z.infer<typeof CreateOrganizationSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   updateOrganization: z.infer<typeof UpdateOrganizationSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   organization: z.infer<typeof OrganizationSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   createProduct: z.infer<typeof CreateProductSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   createFeature: z.infer<typeof CreateFeatureSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   createSubscription: z.infer<typeof CreateSubscriptionSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   updateSubscription: z.infer<typeof UpdateSubscriptionSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   pricingPlan: z.infer<typeof PricingPlanSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   listQueryParams: z.infer<typeof ListQueryParamsSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   fileUpload: z.infer<typeof FileUploadSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   webhookConfig: z.infer<typeof WebhookConfigSchema>;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   errorResponse: z.infer<typeof ErrorResponseSchema>;
 };
