@@ -58,15 +58,27 @@ const LOCALE_SCHEMA = z.enum(SUPPORTED_LOCALES);
 const HTTP_METHOD_SCHEMA = z.nativeEnum(HTTPMethod);
 
 const createBrandedId = <B extends string>(_brand: B) =>
-  z.string().uuid('Invalid UUID format').transform((value) => value as Brand<string, B>);
+  z
+    .string()
+    .uuid('Invalid UUID format')
+    .transform((value) => value as Brand<string, B>);
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const REQUEST_ID_SCHEMA = createBrandedId<RequestId['__brand']>('id:request');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const WEBHOOK_ID_SCHEMA = createBrandedId<WebhookId['__brand']>('id:webhook');
-const WEBHOOK_DELIVERY_ID_SCHEMA = createBrandedId<WebhookDeliveryId['__brand']>('id:webhook-delivery');
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const WEBHOOK_DELIVERY_ID_SCHEMA =
+  createBrandedId<WebhookDeliveryId['__brand']>('id:webhook-delivery');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const FILE_UPLOAD_ID_SCHEMA = createBrandedId<FileUploadId['__brand']>('id:file-upload');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const BATCH_ID_SCHEMA = createBrandedId<BatchId['__brand']>('id:batch');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const BATCH_ITEM_ID_SCHEMA = createBrandedId<BatchItemId['__brand']>('id:batch-item');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const USER_ID_SCHEMA = createBrandedId<UserId['__brand']>('id:user');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const ORGANIZATION_ID_SCHEMA = createBrandedId<OrganizationId['__brand']>('id:organization');
 
 /**
@@ -518,6 +530,7 @@ export const ErrorResponseSchema = z.object({
   method: z.string().optional(),
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const SCHEMA_REGISTRY = {
   loginCredentials: LoginCredentialsSchema,
   passwordResetRequest: PasswordResetRequestSchema,
@@ -585,9 +598,14 @@ export const createValidator = <T>(
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const VALIDATORS = Object.fromEntries(
-  Object.entries(SCHEMA_REGISTRY).map(([key, schema]) => [key, createValidator(schema as z.ZodSchema)])
+  Object.entries(SCHEMA_REGISTRY).map(([key, schema]) => [
+    key,
+    createValidator(schema as z.ZodSchema),
+  ])
 ) as {
-  [K in keyof typeof SCHEMA_REGISTRY]: ReturnType<typeof createValidator<z.infer<(typeof SCHEMA_REGISTRY)[K]>>>;
+  [K in keyof typeof SCHEMA_REGISTRY]: ReturnType<
+    typeof createValidator<z.infer<(typeof SCHEMA_REGISTRY)[K]>>
+  >;
 };
 
 /**
