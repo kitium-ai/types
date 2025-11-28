@@ -1,6 +1,14 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import type { APIResponse, FileUploadId, IsoDateTimeString, RequestId, ResponseMetadata, ValidatorTypes, UserId } from '../src/index';
+import type {
+  APIResponse,
+  FileUploadId,
+  IsoDateTimeString,
+  RequestId,
+  ResponseMetadata,
+  ValidatorTypes,
+  UserId,
+} from '../src/index';
 import type { FeatureFlag } from '../src/api/contracts';
 import { VALIDATORS as RuntimeValidators } from '../src/validators';
 import type { PricingPlan } from '../src/billing/pricing';
