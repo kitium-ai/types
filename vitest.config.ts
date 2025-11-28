@@ -3,10 +3,11 @@
  * Using latest @kitiumai/vitest-helpers 2.0 APIs
  */
 import { defineConfig } from 'vitest/config';
-import { createKitiumVitestConfig } from '@kitiumai/vitest-helpers/config';
 
-export default defineConfig(
-  createKitiumVitestConfig({
+export default defineConfig(async () => {
+  const { createKitiumVitestConfig } = await import('@kitiumai/vitest-helpers/config');
+
+  return createKitiumVitestConfig({
     preset: 'library',
     projectName: '@kitiumai/types',
     environment: 'node',
@@ -26,5 +27,5 @@ export default defineConfig(
         exclude: ['tests/**/*.test-d.ts'], // Exclude tsd type tests
       },
     },
-  })
-);
+  });
+});

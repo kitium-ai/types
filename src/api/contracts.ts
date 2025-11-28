@@ -1,7 +1,7 @@
 // Re-export types from api.ts directly to avoid circular dependency
-export {
-  HTTPMethod,
-  HTTPStatus,
+export { HTTPMethod, HTTPStatus } from '../api.js';
+
+export type {
   APIResponse,
   ResponseMetadata,
   APIError,

@@ -1,14 +1,10 @@
 // Re-export types from auth.ts directly to avoid circular dependency
-export {
-  AuthMethod,
-  UserRole,
-  Permission,
+export { AuthMethod, UserRole, Permission } from '../auth.js';
+
+export type {
   JWTPayload,
   Session,
   AuthorizationContext,
-} from '../auth.js';
-
-export type {
   LoginCredentials,
   OAuthRequest,
   OAuthCallback,

@@ -7,11 +7,25 @@
 import { z } from 'zod';
 
 import { AuthMethod, Permission, UserRole } from './auth';
+import { HTTPMethod } from './api';
 import { BillingCycle, InvoiceStatus, PaymentStatus, SubscriptionStatus } from './billing';
 import { OrganizationPlan, OrganizationStatus, BillingPeriod } from './organization';
 import { FeatureTier, ProductStatus } from './product';
 import { AccountStatus, NotificationChannel } from './user';
-import { SUPPORTED_LOCALES } from './primitives';
+import {
+  BatchId,
+  BatchItemId,
+  Brand,
+  FileUploadId,
+  IsoDateTimeString,
+  OrganizationId,
+  PaginationCursor,
+  RequestId,
+  SUPPORTED_LOCALES,
+  UserId,
+  WebhookDeliveryId,
+  WebhookId,
+} from './primitives';
 
 /**
  * Common validators
@@ -21,17 +35,39 @@ const EMAIL_VALIDATOR = z.string().email('Invalid email format');
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const URL_VALIDATOR = z.string().url('Invalid URL format').optional();
 // eslint-disable-next-line @typescript-eslint/naming-convention
+const ISO_DATETIME_VALIDATOR = z
+  .string()
+  .datetime()
+  .transform((value) => value as IsoDateTimeString);
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const UUID_VALIDATOR = z.string().uuid('Invalid UUID format');
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const DATE_VALIDATOR = z.date().or(z.string().datetime());
+const DATE_VALIDATOR = z.date().or(ISO_DATETIME_VALIDATOR);
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const POSITIVE_NUMBER_VALIDATOR = z.number().positive('Must be positive');
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const PERCENTAGE_VALIDATOR = z.number().min(0).max(100, 'Must be between 0 and 100');
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const CURSOR_VALIDATOR = z.string().min(10, 'Cursor must be at least 10 characters');
+const CURSOR_VALIDATOR = z
+  .string()
+  .min(10, 'Cursor must be at least 10 characters')
+  .transform((value) => value as PaginationCursor);
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const LOCALE_SCHEMA = z.enum(SUPPORTED_LOCALES);
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const HTTP_METHOD_SCHEMA = z.nativeEnum(HTTPMethod);
+
+const createBrandedId = <B extends string>(_brand: B) =>
+  z.string().uuid('Invalid UUID format').transform((value) => value as Brand<string, B>);
+
+const REQUEST_ID_SCHEMA = createBrandedId<RequestId['__brand']>('id:request');
+const WEBHOOK_ID_SCHEMA = createBrandedId<WebhookId['__brand']>('id:webhook');
+const WEBHOOK_DELIVERY_ID_SCHEMA = createBrandedId<WebhookDeliveryId['__brand']>('id:webhook-delivery');
+const FILE_UPLOAD_ID_SCHEMA = createBrandedId<FileUploadId['__brand']>('id:file-upload');
+const BATCH_ID_SCHEMA = createBrandedId<BatchId['__brand']>('id:batch');
+const BATCH_ITEM_ID_SCHEMA = createBrandedId<BatchItemId['__brand']>('id:batch-item');
+const USER_ID_SCHEMA = createBrandedId<UserId['__brand']>('id:user');
+const ORGANIZATION_ID_SCHEMA = createBrandedId<OrganizationId['__brand']>('id:organization');
 
 /**
  * Auth validators
@@ -358,13 +394,13 @@ export const ListQueryParamsSchema = z.object({
 });
 
 export const FileUploadSchema = z.object({
-  id: UUID_VALIDATOR,
+  id: FILE_UPLOAD_ID_SCHEMA,
   name: z.string(),
   mimeType: z.string(),
   size: z.number().int().positive(),
   url: z.string().url(),
-  uploadedAt: DATE_VALIDATOR,
-  uploadedBy: UUID_VALIDATOR,
+  uploadedAt: ISO_DATETIME_VALIDATOR,
+  uploadedBy: USER_ID_SCHEMA,
   metadata: z
     .object({
       width: z.number().int().positive().optional(),
@@ -374,9 +410,20 @@ export const FileUploadSchema = z.object({
     .optional(),
 });
 
+export const WebhookPayloadSchema = z.object({
+  id: WEBHOOK_ID_SCHEMA,
+  event: z.string(),
+  timestamp: ISO_DATETIME_VALIDATOR,
+  data: z.record(z.unknown()),
+  previousData: z.record(z.unknown()).optional(),
+  organizationId: ORGANIZATION_ID_SCHEMA,
+  userId: USER_ID_SCHEMA.optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
 export const WebhookConfigSchema = z.object({
-  id: UUID_VALIDATOR,
-  organizationId: UUID_VALIDATOR,
+  id: WEBHOOK_ID_SCHEMA,
+  organizationId: ORGANIZATION_ID_SCHEMA,
   url: z.string().url(),
   events: z.array(z.string()).min(1),
   secret: z.string().min(32),
@@ -389,9 +436,59 @@ export const WebhookConfigSchema = z.object({
       initialDelayMs: z.number().int().positive(),
     })
     .optional(),
-  lastTriggeredAt: DATE_VALIDATOR.optional(),
-  createdAt: DATE_VALIDATOR,
-  updatedAt: DATE_VALIDATOR,
+  lastTriggeredAt: ISO_DATETIME_VALIDATOR.optional(),
+  createdAt: ISO_DATETIME_VALIDATOR,
+  updatedAt: ISO_DATETIME_VALIDATOR,
+});
+
+export const WebhookDeliverySchema = z.object({
+  id: WEBHOOK_DELIVERY_ID_SCHEMA,
+  webhookId: WEBHOOK_ID_SCHEMA,
+  event: z.string(),
+  payload: WebhookPayloadSchema,
+  statusCode: z.number().int().optional(),
+  response: z.string().optional(),
+  error: z.string().optional(),
+  retryCount: z.number().int().nonnegative(),
+  nextRetryAt: ISO_DATETIME_VALIDATOR.optional(),
+  deliveredAt: ISO_DATETIME_VALIDATOR.optional(),
+  timestamp: ISO_DATETIME_VALIDATOR,
+});
+
+export const RequestContextSchema = z.object({
+  requestId: REQUEST_ID_SCHEMA,
+  userId: USER_ID_SCHEMA.optional(),
+  organizationId: ORGANIZATION_ID_SCHEMA.optional(),
+  ipAddress: z.string(),
+  userAgent: z.string(),
+  origin: z.string().optional(),
+  timestamp: ISO_DATETIME_VALIDATOR,
+});
+
+export const BatchRequestItemSchema = z.object({
+  id: BATCH_ITEM_ID_SCHEMA,
+  method: HTTP_METHOD_SCHEMA,
+  path: z.string(),
+  body: z.unknown().optional(),
+  headers: z.record(z.string()).optional(),
+});
+
+export const BatchRequestSchema = z.object({
+  id: BATCH_ID_SCHEMA,
+  requests: z.array(BatchRequestItemSchema),
+});
+
+export const BatchResponseItemSchema = z.object({
+  id: BATCH_ITEM_ID_SCHEMA,
+  status: z.number().int(),
+  body: z.unknown(),
+  headers: z.record(z.string()).optional(),
+});
+
+export const BatchResponseSchema = z.object({
+  id: BATCH_ID_SCHEMA,
+  responses: z.array(BatchResponseItemSchema),
+  timestamp: ISO_DATETIME_VALIDATOR,
 });
 
 /**
@@ -415,21 +512,42 @@ export const ErrorResponseSchema = z.object({
     fieldErrors: z.array(ValidationErrorSchema).optional(),
     suggestion: z.string().optional(),
   }),
-  timestamp: z.string(),
-  requestId: z.string().optional(),
+  timestamp: ISO_DATETIME_VALIDATOR,
+  requestId: REQUEST_ID_SCHEMA.optional(),
   path: z.string().optional(),
   method: z.string().optional(),
 });
 
-/**
- * Type extraction for validators (internal use only)
- * To avoid naming conflicts with domain types, these types are not exported.
- * Users can infer types directly from schemas using: z.infer<typeof SchemaName>
- *
- * Examples:
- * import { LoginCredentialsSchema } from '@kitium-ai/types';
- * type LoginCredsType = z.infer<typeof LoginCredentialsSchema>;
- */
+export const SCHEMA_REGISTRY = {
+  loginCredentials: LoginCredentialsSchema,
+  passwordResetRequest: PasswordResetRequestSchema,
+  passwordResetConfirm: PasswordResetConfirmSchema,
+  mfaVerification: MFAVerificationSchema,
+  apiKey: APIKeySchema,
+  userRegistration: UserRegistrationSchema,
+  updateUserProfile: UpdateUserProfileSchema,
+  userProfile: UserProfileSchema,
+  user: UserSchema,
+  createOrganization: CreateOrganizationSchema,
+  updateOrganization: UpdateOrganizationSchema,
+  organization: OrganizationSchema,
+  createProduct: CreateProductSchema,
+  createFeature: CreateFeatureSchema,
+  createSubscription: CreateSubscriptionSchema,
+  updateSubscription: UpdateSubscriptionSchema,
+  pricingPlan: PricingPlanSchema,
+  listQueryParams: ListQueryParamsSchema,
+  fileUpload: FileUploadSchema,
+  webhookPayload: WebhookPayloadSchema,
+  webhookConfig: WebhookConfigSchema,
+  webhookDelivery: WebhookDeliverySchema,
+  requestContext: RequestContextSchema,
+  batchRequestItem: BatchRequestItemSchema,
+  batchRequest: BatchRequestSchema,
+  batchResponseItem: BatchResponseItemSchema,
+  batchResponse: BatchResponseSchema,
+  errorResponse: ErrorResponseSchema,
+} as const satisfies Record<string, z.ZodTypeAny>;
 
 /**
  * Validation helper utilities
@@ -466,19 +584,10 @@ export const createValidator = <T>(
  * Pre-instantiated validators for common types
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const VALIDATORS = {
-  loginCredentials: createValidator(LoginCredentialsSchema),
-  userRegistration: createValidator(UserRegistrationSchema),
-  updateUserProfile: createValidator(UpdateUserProfileSchema),
-  createOrganization: createValidator(CreateOrganizationSchema),
-  updateOrganization: createValidator(UpdateOrganizationSchema),
-  createProduct: createValidator(CreateProductSchema),
-  createFeature: createValidator(CreateFeatureSchema),
-  createSubscription: createValidator(CreateSubscriptionSchema),
-  updateSubscription: createValidator(UpdateSubscriptionSchema),
-  listQueryParams: createValidator(ListQueryParamsSchema),
-  fileUpload: createValidator(FileUploadSchema),
-  webhookConfig: createValidator(WebhookConfigSchema),
+export const VALIDATORS = Object.fromEntries(
+  Object.entries(SCHEMA_REGISTRY).map(([key, schema]) => [key, createValidator(schema as z.ZodSchema)])
+) as {
+  [K in keyof typeof SCHEMA_REGISTRY]: ReturnType<typeof createValidator<z.infer<(typeof SCHEMA_REGISTRY)[K]>>>;
 };
 
 /**
@@ -488,45 +597,5 @@ export const VALIDATORS = {
  */
 
 export type ValidatorTypes = {
-  loginCredentials: z.infer<typeof LoginCredentialsSchema>;
-
-  passwordResetRequest: z.infer<typeof PasswordResetRequestSchema>;
-
-  passwordResetConfirm: z.infer<typeof PasswordResetConfirmSchema>;
-
-  mfaVerification: z.infer<typeof MFAVerificationSchema>;
-
-  apiKey: z.infer<typeof APIKeySchema>;
-
-  userRegistration: z.infer<typeof UserRegistrationSchema>;
-
-  updateUserProfile: z.infer<typeof UpdateUserProfileSchema>;
-
-  userProfile: z.infer<typeof UserProfileSchema>;
-
-  user: z.infer<typeof UserSchema>;
-
-  createOrganization: z.infer<typeof CreateOrganizationSchema>;
-
-  updateOrganization: z.infer<typeof UpdateOrganizationSchema>;
-
-  organization: z.infer<typeof OrganizationSchema>;
-
-  createProduct: z.infer<typeof CreateProductSchema>;
-
-  createFeature: z.infer<typeof CreateFeatureSchema>;
-
-  createSubscription: z.infer<typeof CreateSubscriptionSchema>;
-
-  updateSubscription: z.infer<typeof UpdateSubscriptionSchema>;
-
-  pricingPlan: z.infer<typeof PricingPlanSchema>;
-
-  listQueryParams: z.infer<typeof ListQueryParamsSchema>;
-
-  fileUpload: z.infer<typeof FileUploadSchema>;
-
-  webhookConfig: z.infer<typeof WebhookConfigSchema>;
-
-  errorResponse: z.infer<typeof ErrorResponseSchema>;
+  [K in keyof typeof SCHEMA_REGISTRY]: z.infer<(typeof SCHEMA_REGISTRY)[K]>;
 };

@@ -1,6 +1,6 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import type { APIResponse, IsoDateTimeString, ValidatorTypes, UserId } from '../src/index';
+import type { APIResponse, FileUploadId, IsoDateTimeString, RequestId, ResponseMetadata, ValidatorTypes, UserId } from '../src/index';
 import type { FeatureFlag } from '../src/api/contracts';
 import { VALIDATORS as RuntimeValidators } from '../src/validators';
 import type { PricingPlan } from '../src/billing/pricing';
@@ -8,15 +8,23 @@ import { BillingCycle } from '../src/billing';
 import { brand } from '../src/primitives';
 
 const timestamp = '2024-01-01T00:00:00.000Z' as IsoDateTimeString;
+const requestId = brand('b3f2b9b1-7f26-4d4c-9f6f-9ed3a2f4c3a1', 'id:request');
 
 const response: APIResponse<{ ok: true }> = {
   success: true,
   status: 200,
   data: { ok: true },
   timestamp,
+  metadata: {
+    requestId,
+    version: '2024.12.0',
+    timestamp,
+    duration: 42,
+  },
 };
 
 expectType<IsoDateTimeString>(response.timestamp);
+expectType<RequestId>((response.metadata as ResponseMetadata).requestId);
 
 const loginParse = RuntimeValidators.loginCredentials.safeParse({
   email: 'founder@example.com',
@@ -57,3 +65,16 @@ const featureFlag: FeatureFlag = {
 };
 
 expectType<FeatureFlag>(featureFlag);
+
+const fileId: FileUploadId = brand('cf191a2d-4e8a-4639-94a1-0e7ac322f1d9', 'id:file-upload');
+const fileUploadPayload: ValidatorTypes['fileUpload'] = {
+  id: fileId,
+  name: 'invoice.pdf',
+  mimeType: 'application/pdf',
+  size: 1024,
+  url: 'https://files.example.com/invoice.pdf',
+  uploadedAt: timestamp,
+  uploadedBy: userId,
+};
+
+expectType<FileUploadId>(fileUploadPayload.id);

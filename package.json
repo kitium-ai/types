@@ -7,99 +7,104 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./auth": {
+      "types": "./dist/auth.d.ts",
       "import": "./dist/auth.js",
-      "require": "./dist/auth.cjs",
-      "types": "./dist/auth.d.ts"
+      "require": "./dist/auth.cjs"
     },
     "./auth/access": {
+      "types": "./dist/auth/access.d.ts",
       "import": "./dist/auth/access.js",
-      "require": "./dist/auth/access.cjs",
-      "types": "./dist/auth/access.d.ts"
+      "require": "./dist/auth/access.cjs"
     },
     "./user": {
+      "types": "./dist/user.d.ts",
       "import": "./dist/user.js",
-      "require": "./dist/user.cjs",
-      "types": "./dist/user.d.ts"
+      "require": "./dist/user.cjs"
     },
     "./organization": {
+      "types": "./dist/organization.d.ts",
       "import": "./dist/organization.js",
-      "require": "./dist/organization.cjs",
-      "types": "./dist/organization.d.ts"
+      "require": "./dist/organization.cjs"
     },
     "./product": {
+      "types": "./dist/product.d.ts",
       "import": "./dist/product.js",
-      "require": "./dist/product.cjs",
-      "types": "./dist/product.d.ts"
+      "require": "./dist/product.cjs"
     },
     "./billing": {
+      "types": "./dist/billing.d.ts",
       "import": "./dist/billing.js",
-      "require": "./dist/billing.cjs",
-      "types": "./dist/billing.d.ts"
+      "require": "./dist/billing.cjs"
     },
     "./billing/pricing": {
+      "types": "./dist/billing/pricing.d.ts",
       "import": "./dist/billing/pricing.js",
-      "require": "./dist/billing/pricing.cjs",
-      "types": "./dist/billing/pricing.d.ts"
+      "require": "./dist/billing/pricing.cjs"
     },
     "./api": {
+      "types": "./dist/api.d.ts",
       "import": "./dist/api.js",
-      "require": "./dist/api.cjs",
-      "types": "./dist/api.d.ts"
+      "require": "./dist/api.cjs"
     },
     "./api/contracts": {
+      "types": "./dist/api/contracts.d.ts",
       "import": "./dist/api/contracts.js",
-      "require": "./dist/api/contracts.cjs",
-      "types": "./dist/api/contracts.d.ts"
+      "require": "./dist/api/contracts.cjs"
     },
     "./api/errors": {
+      "types": "./dist/api/errors.d.ts",
       "import": "./dist/api/errors.js",
-      "require": "./dist/api/errors.cjs",
-      "types": "./dist/api/errors.d.ts"
+      "require": "./dist/api/errors.cjs"
     },
     "./errors": {
+      "types": "./dist/errors.d.ts",
       "import": "./dist/errors.js",
-      "require": "./dist/errors.cjs",
-      "types": "./dist/errors.d.ts"
+      "require": "./dist/errors.cjs"
     },
     "./services": {
+      "types": "./dist/services.d.ts",
       "import": "./dist/services.js",
-      "require": "./dist/services.cjs",
-      "types": "./dist/services.d.ts"
+      "require": "./dist/services.cjs"
     },
     "./auth/rbac": {
+      "types": "./dist/auth/rbac.d.ts",
       "import": "./dist/auth/rbac.js",
-      "require": "./dist/auth/rbac.cjs",
-      "types": "./dist/auth/rbac.d.ts"
+      "require": "./dist/auth/rbac.cjs"
     },
     "./auth/sso": {
+      "types": "./dist/auth/sso.d.ts",
       "import": "./dist/auth/sso.js",
-      "require": "./dist/auth/sso.cjs",
-      "types": "./dist/auth/sso.d.ts"
+      "require": "./dist/auth/sso.cjs"
     },
     "./auth/twofa": {
+      "types": "./dist/auth/twofa.d.ts",
       "import": "./dist/auth/twofa.js",
-      "require": "./dist/auth/twofa.cjs",
-      "types": "./dist/auth/twofa.d.ts"
+      "require": "./dist/auth/twofa.cjs"
     },
     "./utils": {
+      "types": "./dist/utils.d.ts",
       "import": "./dist/utils.js",
-      "require": "./dist/utils.cjs",
-      "types": "./dist/utils.d.ts"
+      "require": "./dist/utils.cjs"
     },
     "./primitives": {
+      "types": "./dist/primitives.d.ts",
       "import": "./dist/primitives.js",
-      "require": "./dist/primitives.cjs",
-      "types": "./dist/primitives.d.ts"
+      "require": "./dist/primitives.cjs"
     },
-    "./logger": {
-      "import": "./dist/logger.js",
-      "require": "./dist/logger.cjs",
-      "types": "./dist/logger.d.ts"
+    "./v1": {
+      "types": "./dist/v1.d.ts",
+      "import": "./dist/v1.js",
+      "require": "./dist/v1.cjs"
+    },
+    "./experimental": {
+      "types": "./dist/experimental.d.ts",
+      "import": "./dist/experimental.js",
+      "require": "./dist/experimental.cjs"
     }
   },
   "files": [
@@ -116,7 +121,7 @@
     "verify": "pnpm run lint && pnpm run test:types && pnpm run type-check",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
-    "test": "echo \"No tests configured yet\"",
+    "test": "vitest run",
     "test:watch": "vitest watch",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -182,8 +187,7 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "zod": "^3.22.4",
-    "@kitiumai/logger": "^2.0.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@kitiumai/config": "^2.0.0",
@@ -197,6 +201,7 @@
     "graphql": "^16.12.0",
     "typescript": "^5.6.0",
     "tsd": "^0.31.0",
-    "tsup": "^8.2.4"
+    "tsup": "^8.2.4",
+    "vitest": "^2.1.3"
   }
 }

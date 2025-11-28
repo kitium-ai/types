@@ -49,21 +49,3 @@ export { VALIDATORS } from './validators';
 export type { ValidatorTypes } from './validators';
 export type * as ValidatorSchemas from './validators';
 export type * as Entities from './entities';
-
-// Re-export logger types and utilities from @kitiumai/logger 2.0
-export type * from './logger';
-export {
-  LogLevel,
-  LoggerType,
-  HealthStatus,
-  createLogger,
-  getLogger,
-  initializeLogger,
-  LoggerBuilder,
-  LoggerFactory,
-  getGlobalLogger,
-  initGlobalLogger,
-  contextManager,
-  validateLoggerConfig,
-  performHealthCheck,
-} from './logger';
