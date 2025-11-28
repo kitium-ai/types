@@ -6,10 +6,10 @@ export {
   PaymentStatus,
   InvoiceStatus,
   TaxType,
-  PricingPlan,
 } from '../billing.js';
 
 export type {
+  PricingPlan,
   Subscription,
   SubscriptionLineItem,
   PaymentMethod,

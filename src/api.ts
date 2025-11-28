@@ -1,4 +1,15 @@
-import type { IsoDateTimeString, OrganizationId, PaginationCursor, UserId } from './primitives';
+import type {
+  BatchId,
+  BatchItemId,
+  FileUploadId,
+  IsoDateTimeString,
+  OrganizationId,
+  PaginationCursor,
+  RequestId,
+  UserId,
+  WebhookDeliveryId,
+  WebhookId,
+} from './primitives';
 
 /**
  * API Request/Response Types
@@ -43,7 +54,7 @@ export enum HTTPStatus {
  */
 export interface APIResponse<T = unknown> {
   readonly success: boolean;
-  readonly status: number;
+  readonly status: HTTPStatus | number;
   readonly message?: string;
   readonly data?: T;
   readonly error?: APIError;
@@ -55,7 +66,7 @@ export interface APIResponse<T = unknown> {
  * Response metadata for pagination and tracking
  */
 export interface ResponseMetadata {
-  readonly requestId: string;
+  readonly requestId: RequestId;
   readonly version: string;
   readonly timestamp: IsoDateTimeString;
   readonly duration: number; // milliseconds
@@ -127,7 +138,7 @@ export interface RequestPagination {
  * File upload metadata
  */
 export interface FileUpload {
-  readonly id: string;
+  readonly id: FileUploadId;
   readonly name: string;
   readonly mimeType: string;
   readonly size: number;
@@ -145,7 +156,7 @@ export interface FileUpload {
  * Webhook event payload
  */
 export interface WebhookPayload {
-  readonly id: string;
+  readonly id: WebhookId;
   readonly event: string;
   readonly timestamp: IsoDateTimeString;
   readonly data: Record<string, unknown>;
@@ -159,7 +170,7 @@ export interface WebhookPayload {
  * Webhook configuration
  */
 export interface WebhookConfig {
-  readonly id: string;
+  readonly id: WebhookId;
   readonly organizationId: OrganizationId;
   readonly url: string;
   readonly events: readonly string[];
@@ -180,8 +191,8 @@ export interface WebhookConfig {
  * Webhook delivery log
  */
 export interface WebhookDelivery {
-  readonly id: string;
-  readonly webhookId: string;
+  readonly id: WebhookDeliveryId;
+  readonly webhookId: WebhookId;
   readonly event: string;
   readonly payload: WebhookPayload;
   readonly statusCode?: number;
@@ -197,7 +208,7 @@ export interface WebhookDelivery {
  * Request context information
  */
 export interface RequestContext {
-  readonly requestId: string;
+  readonly requestId: RequestId;
   readonly userId?: UserId;
   readonly organizationId?: OrganizationId;
   readonly ipAddress: string;
@@ -210,7 +221,7 @@ export interface RequestContext {
  * Batch request for multiple operations
  */
 export interface BatchRequest {
-  readonly id: string;
+  readonly id: BatchId;
   readonly requests: readonly BatchRequestItem[];
 }
 
@@ -218,7 +229,7 @@ export interface BatchRequest {
  * Individual item in batch request
  */
 export interface BatchRequestItem {
-  readonly id: string;
+  readonly id: BatchItemId;
   readonly method: HTTPMethod;
   readonly path: string;
   readonly body?: unknown;
@@ -229,7 +240,7 @@ export interface BatchRequestItem {
  * Batch response containing multiple results
  */
 export interface BatchResponse {
-  readonly id: string;
+  readonly id: BatchId;
   readonly responses: readonly BatchResponseItem[];
   readonly timestamp: IsoDateTimeString;
 }
@@ -238,7 +249,7 @@ export interface BatchResponse {
  * Individual item in batch response
  */
 export interface BatchResponseItem {
-  readonly id: string;
+  readonly id: BatchItemId;
   readonly status: number;
   readonly body: unknown;
   readonly headers?: Record<string, string>;

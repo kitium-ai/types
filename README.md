@@ -12,6 +12,47 @@ This package provides a comprehensive, type-safe type system designed for scalab
 - **Validators** - Runtime validation with Zod
 - **Utilities** - Reusable type helpers
 
+## Quickstart
+
+Use the stable, versioned entrypoint for production and the experimental surface when you want access to preview contracts:
+
+```typescript
+// Stable contract pinned to the current major surface
+import { User, APIResponse, VALIDATORS, Identifier } from '@kitium-ai/types/v1';
+
+const payload: APIResponse<User> = {
+  success: true,
+  status: 200,
+  data: {
+    id: Identifier('user_123'),
+    email: 'user@example.com',
+    firstName: 'Ada',
+    lastName: 'Lovelace',
+    status: 'active',
+    roles: ['member'],
+    permissions: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  timestamp: new Date().toISOString(),
+};
+
+// Opt-in preview surface (safe to tree-shake away)
+import { stability } from '@kitium-ai/types/experimental';
+console.log(`Using ${stability} contracts`);
+
+// Runtime validation with branded primitives
+const result = VALIDATORS.userRegistration.safeParse({
+  email: 'user@example.com',
+  firstName: 'Ada',
+  lastName: 'Lovelace',
+  password: 'Supers3cret!',
+  confirmPassword: 'Supers3cret!',
+  acceptTerms: true,
+  acceptPrivacy: true,
+});
+```
+
 ## Installation
 
 ```bash
@@ -22,6 +63,29 @@ yarn add @kitium-ai/types
 ### Dependencies
 
 - **zod** (^3.22.4) - Runtime validation and type inference
+
+### Versioned entrypoints
+
+- `@kitium-ai/types/v1` — pinned stable contract for production consumers
+- `@kitium-ai/types/experimental` — opt-in preview surface isolated from the stable API
+
+### Logging
+
+Logger utilities now live in [`@kitiumai/logger`](https://www.npmjs.com/package/@kitiumai/logger) to keep this package focused on transport-safe types.
+
+## API references
+
+The package ships typed, runtime-safe entrypoints to mirror your platform surface area:
+
+- `@kitium-ai/types` — full domain and API surface (auth, users, organizations, billing, products, errors, utilities)
+- `@kitium-ai/types/v1` — stable, versioned alias of the primary surface
+- `@kitium-ai/types/experimental` — opt-in preview exports for early adopters
+- `@kitium-ai/types/auth`, `@kitium-ai/types/organization`, `@kitium-ai/types/product`, `@kitium-ai/types/billing` — focused domain bundles
+- `@kitium-ai/types/api` — request/response contracts, pagination helpers, webhook payloads
+- `@kitium-ai/types/primitives` — branded identifiers (`Identifier`, `IsoDateTimeString`, `Uuid`) and helper utilities
+- `@kitium-ai/types/errors` — error codes, severities, and response contracts
+- `@kitium-ai/types/utils` — cross-cutting helpers (`Result`, `Pagination`, collection helpers)
+- `VALIDATORS` namespace — pre-built Zod schemas for runtime validation across auth, billing, product, and webhook flows
 
 ## Architecture
 

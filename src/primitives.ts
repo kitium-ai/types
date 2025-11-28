@@ -19,6 +19,12 @@ export type FeatureId = Identifier<'feature'>;
 export type PlanId = Identifier<'plan'>;
 export type ApiKeyId = Identifier<'api-key'>;
 export type SessionId = Identifier<'session'>;
+export type RequestId = Identifier<'request'>;
+export type WebhookId = Identifier<'webhook'>;
+export type WebhookDeliveryId = Identifier<'webhook-delivery'>;
+export type FileUploadId = Identifier<'file-upload'>;
+export type BatchId = Identifier<'batch'>;
+export type BatchItemId = Identifier<'batch-item'>;
 
 /**
  * Transport-friendly timestamp helpers (ISO 8601).

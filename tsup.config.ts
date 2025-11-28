@@ -16,6 +16,8 @@ const entryPoints = [
   'src/primitives.ts',
   'src/validators.ts',
   'src/entities.ts',
+  'src/v1.ts',
+  'src/experimental.ts',
 ];
 
 export default defineConfig({
