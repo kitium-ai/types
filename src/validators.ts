@@ -57,7 +57,9 @@ const LOCALE_SCHEMA = z.enum(SUPPORTED_LOCALES);
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const HTTP_METHOD_SCHEMA = z.nativeEnum(HTTPMethod);
 
-const createBrandedId = <B extends string>(_brand: B) =>
+const createBrandedId = <B extends string>(
+  _brand: B
+): z.ZodEffects<z.ZodString, Brand<string, B>, string> =>
   z
     .string()
     .uuid('Invalid UUID format')
