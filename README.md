@@ -2,6 +2,59 @@
 
 Enterprise-ready TypeScript types and interfaces for Kitium AI SaaS platform. Provides a **single source of truth** for all types across your application.
 
+## Usage & Tree-Shaking
+
+This package is ESM-first (`type: module`) and configured with `sideEffects: false` and granular subpath exports. Import only what you need to keep bundles small and enable optimal tree-shaking.
+
+- Core entry:
+  - `import { ApiError } from '@kitiumai/types'`
+
+- Auth:
+  - `import { AuthContext } from '@kitiumai/types/auth'`
+  - `import { AccessPolicy } from '@kitiumai/types/auth/access'`
+  - `import { RbacRole } from '@kitiumai/types/auth/rbac'`
+  - `import { SsoProvider } from '@kitiumai/types/auth/sso'`
+  - `import { TwoFaMethod } from '@kitiumai/types/auth/twofa'`
+
+- API:
+  - `import { ApiRequest } from '@kitiumai/types/api'`
+  - `import { Contract } from '@kitiumai/types/api/contracts'`
+  - `import { ApiErrorShape } from '@kitiumai/types/api/errors'`
+
+- Domain:
+  - `import { User } from '@kitiumai/types/user'`
+  - `import { Organization } from '@kitiumai/types/organization'`
+  - `import { Product } from '@kitiumai/types/product'`
+  - `import { BillingPlan } from '@kitiumai/types/billing'`
+  - `import { PricingTier } from '@kitiumai/types/billing/pricing'`
+  - `import { Entities, EntityId } from '@kitiumai/types/entities'`
+
+- Services:
+  - `import { EmailMessage } from '@kitiumai/types/services/email'`
+  - `import { FileObject } from '@kitiumai/types/services/file'`
+  - `import { SearchQuery } from '@kitiumai/types/services/search'`
+  - `import { DatabaseConfig } from '@kitiumai/types/services/database'`
+  - `import { ServiceMap } from '@kitiumai/types/services'`
+
+- Utilities:
+  - `import { PrimitiveId } from '@kitiumai/types/primitives'`
+  - `import { Validators } from '@kitiumai/types/validators'`
+  - `import { pick, mergeDeep } from '@kitiumai/types/utils'`
+
+- Versioned and Experimental:
+  - `import { V1Schema } from '@kitiumai/types/v1'`
+  - `import { ExperimentalFeature } from '@kitiumai/types/experimental'`
+
+### Type Declarations
+
+Type declarations are emitted to `dist/**/*.d.ts` for each subpath. The package also sets `typesVersions` to point to `dist/*` to ensure editors and build tools resolve the correct types per entry.
+
+### Notes
+
+- Dual publishing: both ESM (`.js`) and CJS (`.cjs`) builds are provided for compatibility.
+- Avoid importing from deep file paths under `dist`; prefer documented subpath exports shown above.
+- When adding new modules under `src/`, ensure `tsup.config.ts` includes them as entry points and update `package.json` `exports` accordingly.
+
 ## Overview
 
 This package provides a comprehensive, type-safe type system designed for scalable SaaS applications. It ensures consistency across:

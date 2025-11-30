@@ -1,6 +1,6 @@
 {
   "name": "@kitiumai/types",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enterprise-ready TypeScript types and interfaces for Kitium AI Product SaaS",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -72,6 +72,26 @@
       "import": "./dist/services.js",
       "require": "./dist/services.cjs"
     },
+    "./services/email": {
+      "types": "./dist/services/email.d.ts",
+      "import": "./dist/services/email.js",
+      "require": "./dist/services/email.cjs"
+    },
+    "./services/file": {
+      "types": "./dist/services/file.d.ts",
+      "import": "./dist/services/file.js",
+      "require": "./dist/services/file.cjs"
+    },
+    "./services/search": {
+      "types": "./dist/services/search.d.ts",
+      "import": "./dist/services/search.js",
+      "require": "./dist/services/search.cjs"
+    },
+    "./services/database": {
+      "types": "./dist/services/database.d.ts",
+      "import": "./dist/services/database.js",
+      "require": "./dist/services/database.cjs"
+    },
     "./auth/rbac": {
       "types": "./dist/auth/rbac.d.ts",
       "import": "./dist/auth/rbac.js",
@@ -91,6 +111,16 @@
       "types": "./dist/utils.d.ts",
       "import": "./dist/utils.js",
       "require": "./dist/utils.cjs"
+    },
+    "./entities": {
+      "types": "./dist/entities.d.ts",
+      "import": "./dist/entities.js",
+      "require": "./dist/entities.cjs"
+    },
+    "./validators": {
+      "types": "./dist/validators.d.ts",
+      "import": "./dist/validators.js",
+      "require": "./dist/validators.cjs"
     },
     "./primitives": {
       "types": "./dist/primitives.d.ts",
@@ -265,10 +295,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@kitiumai/config": "^2.0.0",
-    "@kitiumai/lint": "^2.0.0",
+    "@kitiumai/config": "^2.0.1",
+    "@kitiumai/lint": "^2.0.1",
     "@kitiumai/scripts": "^1.0.0",
-    "@kitiumai/vitest-helpers": "^2.0.0",
+    "@kitiumai/vitest-helpers": "^2.0.1",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
